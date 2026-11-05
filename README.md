@@ -84,24 +84,31 @@ Agentry understands multiple workflows (offline local markdown vs. GitHub Issues
 
 ## Installation & Usage
 
-### 1. Install as an Agent Skill
+### 1. Install the Skill
 
-#### Claude Code
-Clone or link `agentry` into your Claude Code skills directory:
+Add `agentry` directly using the standard Agent Skills CLI (`skills.sh` / `agentskills.io`):
 
 ```bash
-# Global/Personal skill
-git clone https://github.com/SebassContreras/agentry ~/.claude/skills/agentry
+# Add to current project
+npx skills add SebassContreras/agentry
+# or with pnpm
+pnpm dlx skills add SebassContreras/agentry
+
+# Install globally (available across all your projects)
+npx skills add -g SebassContreras/agentry
 ```
 
-Or copy the `skills/agentry` folder into your project's `.claude/skills/agentry`.
-
-#### Antigravity
-Clone or link into your Antigravity skills path:
+<details>
+<summary>Manual installation (git clone)</summary>
 
 ```bash
+# Claude Code (global)
+git clone https://github.com/SebassContreras/agentry ~/.claude/skills/agentry
+
+# Antigravity (global)
 git clone https://github.com/SebassContreras/agentry ~/.gemini/antigravity-cli/skills/agentry
 ```
+</details>
 
 ---
 
