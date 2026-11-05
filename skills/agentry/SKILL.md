@@ -24,17 +24,24 @@ Run **inside the target repository**. This skill copies and fits the scaffold; i
    - Language the user speaks, and the language of the product's own text if it has a UI or messages (not the same as the language the user speaks).
    - Project kind: *software with a UI*, *software without a UI* (CLI, API, library), or *content* (docs, video, research).
    - Collaboration mode: *solo* (commit directly to main) or *team* (branches and pull requests).
-   - Planning location: *repo* (local `planning/` folder) or *github* (GitHub Issues).
-2. **Copy** from `${CLAUDE_SKILL_DIR}/assets/` with a file copy, not by retyping:
+   - Planning location: *repo* (local `planning/` folder, default) or *github* (GitHub Issues).
+2. **Copy and adapt** from `${CLAUDE_SKILL_DIR}/assets/` with a file copy, not by retyping:
 
    | From `assets/` | To the repository |
    |---|---|
    | `contracts/AGENTS.md`, `PRODUCT.md`, `ARCHITECTURE.md`, `ENGINEERING.md`, `TESTING.md`, `OPERATIONS.md` | the root, same names |
    | `contracts/design-ui.md` or `design-interface.md` or `design-content.md` (by kind) | `DESIGN.md` |
    | `playbooks/*.md` | `.agents/playbooks/` |
-   | `planning/roadmap.md` (only if planning is `repo`) | `planning/roadmap.md`, and create `planning/specs/` with an empty `.gitkeep` |
+   | `planning/roadmap.md` (**only if planning is `repo`**) | `planning/roadmap.md`, and create `planning/specs/` with an empty `.gitkeep` |
 
-3. **Fill the contracts.** Replace `{{PROJECT_NAME}}` and `{{GOAL}}`. Set `Collaboration` and `Planning` in `AGENTS.md`. For each `<fill: …>` marker, read the repository first (manifests and scripts, lockfiles, CI, folders, the README, existing docs) and write only what the repository cannot show on its own. Keep `AGENTS.md` under 100 lines. Put the user's language in `AGENTS.md` (hard rule 3) and the product's language in `DESIGN.md`. Each fact lives in one contract only.
+   > **Single-lane rule:** If the user selects `github`, **do not create the `planning/` directory**. The target repository must carry zero noise from the lane it did not choose.
+
+3. **Fill the contracts for the chosen lane.** Replace `{{PROJECT_NAME}}` and `{{GOAL}}`.
+   - Set `Collaboration` in `AGENTS.md`.
+   - Fill the `Planning` markers in `AGENTS.md` and `plan.md` **strictly with the single chosen lane**:
+     - **If `repo`:** write only the `planning/roadmap.md` and `planning/specs/` instructions. Omit any mention of GitHub Issues.
+     - **If `github`:** write only the `gh issue list` and `gh issue create` instructions. Omit any mention of `planning/` or `roadmap.md`.
+   - For all other `<fill: …>` markers, read the repository first and write only what the repository cannot show on its own. Keep `AGENTS.md` under 100 lines. Put the user's language in `AGENTS.md` (hard rule 3) and the product's language in `DESIGN.md`. Each fact lives in one contract only.
 
    For a project that is not software (video, writing, research), keep the same files and change what they hold: `ENGINEERING.md` holds production standards and drops code principles; `TESTING.md` holds the review checklist; `DESIGN.md` is the content variant.
 4. **Report** the files created and the unfilled markers, and suggest the first commit as `chore: add agent contracts` (no trailers). Tell the user the next step is to ask the agent to plan the project; `AGENTS.md` routes that to `.agents/playbooks/plan.md`. Then offer the optional extras below as a question, not as something already installed. Stop there.
@@ -45,6 +52,12 @@ For each shipped file (contracts, playbooks) compare it with the repository's co
 
 - A contract the repository has edited: propose only sections or rules it lacks. Never replace its text.
 - The playbooks: replace only when the user approves the diff.
+
+### Switching planning lanes (`repo` ↔ `github`)
+
+If a project needs to switch from local `repo` specs to `github` (or vice versa):
+- **From `repo` to `github`:** run `gh issue create` for any open spec in `planning/roadmap.md`, delete the `planning/` folder, and update the planning lines in `AGENTS.md` and `plan.md` to the GitHub commands.
+- **From `github` to `repo`:** fetch open issues via `gh issue list`, scaffold `planning/roadmap.md` and `planning/specs/`, and update the planning lines in `AGENTS.md` and `plan.md` to the repo commands.
 
 ## Optional extras (suggest, never install by default)
 

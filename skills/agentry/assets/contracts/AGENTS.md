@@ -30,7 +30,12 @@ When you decide something, name the contract and section you used ("per ENGINEER
 ## Working flow
 
 - **Collaboration:** <fill: solo (commit to main) | team (feature branches and pull requests)>
-- **Planning:** <fill: repo (planning/specs/ and planning/roadmap.md) | github (issues and milestones)>
+- **Planning:** <fill: the active planning mode: repo (planning/roadmap.md and planning/specs/) | github (GitHub Issues)>
+
+How to pick the next task:
+<fill:
+- repo: read planning/roadmap.md and take the first open [agent] task of the first spec that is not done.
+- github: run gh issue list and take the first open issue.>
 
 Work scales with risk:
 
