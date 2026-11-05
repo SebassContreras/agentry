@@ -6,8 +6,8 @@
 
 | It is… | Do |
 |---|---|
-| A small fix: a typo, a stale doc, a defect that breaks no recorded decision (Level 0) | Commit directly as `fix:` or `docs:`, with a regression test if behavior changes. No spec. Not now? One line under `## Ideas` in the roadmap. |
-| A bug against a requirement (Level 1) | In the spec that owns it, add a `[test]` regression task and a fix task. If that spec was `done`, set its roadmap row back to `in progress`. |
+| A small fix: a typo, a stale doc, a defect that breaks no recorded decision (Level 0) | Commit directly as `fix:` or `docs:` per the Collaboration setting in `AGENTS.md`. No spec. Not now? Record under `## Ideas` in the active planning tracker. |
+| A bug against a requirement (Level 1) | In the active spec (the repo file, GitHub issue or tracker task), add a `[test]` regression task and a fix task. |
 | A new feature (Level 1) | Follow `plan.md`. |
 | A change of direction or decision conflict (Level 2) | The steps below. |
 

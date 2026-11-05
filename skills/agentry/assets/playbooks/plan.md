@@ -1,17 +1,20 @@
 # Playbook: plan
 
-> Owns: turning an idea into specs, and shaping the contracts to fit the project · Not here: standards (ENGINEERING.md, TESTING.md), the roadmap itself (planning/roadmap.md)
+> Owns: turning an idea into specs, and shaping the contracts to fit the project · Not here: standards (ENGINEERING.md, TESTING.md), the tracker itself
 
 ## Steps
 
-1. Read `AGENTS.md`, every contract, `planning/roadmap.md` and `git log -20`. Read the code you will touch.
+1. Read `AGENTS.md`, every contract, the active planning tracker (per the Planning setting in AGENTS.md) and `git log -20`. Read the code you will touch.
 2. Ask only what blocks the plan: open stack choices, credentials. Decide the rest and record the decision in the spec's Design.
-3. Cut the plan into thin slices that each end in something running. Add one roadmap row per spec, and write a full spec only for the next one; later specs stay one line in the roadmap.
-4. Write the next spec in the format below. Keep it under 80 lines.
-5. List the contract changes the plan implies: a layer in ARCHITECTURE.md, a command in OPERATIONS.md, a framework in TESTING.md. Show them as a diff, apply them once the user approves, and record any lasting decision in the affected contract with `Why:` and `Revisit if:`. Write only what the repo cannot show, and add a rule only after a failure you saw.
+3. Cut the plan into thin slices that each end in something running.
+4. Create the next spec in the format below (under 80 lines) according to the **Planning** setting in `AGENTS.md`:
+   - **If `repo`:** write `planning/specs/NNN-feature.md` and add one row to `planning/roadmap.md`.
+   - **If `github`:** run `gh issue create --title "NNN — feature" --body "..."` with the spec content.
+   - **If `tracker` (ClickUp/Jira):** create the task via MCP or CLI with the spec content.
+5. List the contract changes the plan implies: a layer or dependency in ARCHITECTURE.md, a command in OPERATIONS.md. Show them as a diff, apply them once approved, and record any lasting decision in the affected contract with `Why:` and `Revisit if:`.
 6. Report, and stop: planning does not start executing.
 
-## Spec format
+## Spec format (Universal across repo files, GitHub issues and ClickUp)
 
 ```markdown
 # 003 — login
@@ -32,8 +35,11 @@ What works when this is done and how to check it, in 2–3 lines.
       blocked: waiting for approval
 ```
 
-- Every requirement is covered by a task, and by a `[test]` task. A `[test]` task writes or runs a test.
+- Every requirement is covered by a task, and by a `[test]` task.
 - `[x]` needs a `verified:` line under it with the evidence.
-- When a decision changes, rewrite the spec directly; previous versions are preserved in git.
-- `[agent]` is for what an agent can do; `[human]` is for accounts, credentials and physical actions.
-- Finished spec: mark the roadmap row `done` and delete the spec file. What lasts lives in the contracts and `git log`.
+- When a decision changes, rewrite the spec directly; previous versions are in git or issue history.
+- **Finished spec:**
+  - **repo:** mark the roadmap row `done` and delete the spec file.
+  - **github:** close the issue (`Closes #12` in the commit message or `gh issue close 12`).
+  - **tracker:** mark the task complete via MCP or CLI.
+  - What lasts lives in the contracts and `git log`.
