@@ -9,7 +9,7 @@
 1. Never add Claude or AI attribution ("Generated with...", co-author trailers) to commits or pull requests. Commits are Conventional Commits with no trailers.
 2. Never bypass git hooks (`--no-verify`), force-push `main`, or stage `.env` files or secrets.
 3. Write code, comments, docs and commits in <fill: the project language, English unless the project says otherwise>. Talk to the user in <fill: the language the user speaks>. The language of the product's own text (interface, messages) is set in DESIGN.md, not here.
-4. **Workaround signals are stop conditions.** If honoring a decision or instruction requires an artificial shim/wrapper, duplicate code, a conditional special-case patch, silencing exceptions, or suppressing linters/tests: STOP and report the conflict before writing code.
+4. If an instruction or decision forces a workaround or bad design, stop and report the conflict before writing code (per ENGINEERING.md).
 
 ## Before you act, open the contract
 
@@ -29,8 +29,11 @@ When you decide something, name the contract and section you used ("per ENGINEER
 
 ## Working flow
 
+- **Collaboration:** <fill: solo (commit to main) | team (feature branches and pull requests)>
+- **Planning:** <fill: repo (planning/specs/ and planning/roadmap.md) | github (issues and milestones)>
+
 Work scales with risk:
 
-- **Level 0 (Small):** Fits in one sentence and touches no recorded decision. Implement directly, run the affected test, and commit to `main`. No spec needed.
-- **Level 1 (Feature):** Several tasks or multiple sessions. Follow `.agents/playbooks/plan.md`: short spec in `planning/specs/`, executed task by task, deleted when done.
+- **Level 0 (Small):** Fits in one sentence and touches no recorded decision. Implement directly, run the affected test, and commit per the Collaboration mode. No spec needed.
+- **Level 1 (Feature):** Several tasks or multiple sessions. Short spec in the configured Planning location, executed task by task, closed when done.
 - **Level 2 (Change of direction / Decision conflict):** Contradicts an earlier decision or requires a pivot. Follow `.agents/playbooks/change.md`: delete first, discard and redo on a disposable branch, and run an orphan sweep.

@@ -33,6 +33,7 @@ const ownerOfSection = [
   { section: 'Build and release', owner: 'OPERATIONS' },
   { section: 'Layers', owner: 'ARCHITECTURE' },
   { section: 'Principles', owner: 'ENGINEERING' },
+  { section: 'Workaround signals (Stop conditions)', owner: 'ENGINEERING' },
   { section: 'Event-driven code hygiene', owner: 'ENGINEERING' },
 ];
 
@@ -52,7 +53,7 @@ const oneOwner = [
   { fact: 'no AI attribution', pattern: /co-author/i, owner: 'AGENTS' },
   { fact: 'the language of code and commits', pattern: /docs and commits in/i, owner: 'AGENTS' },
   { fact: 'the language of the product text', pattern: /language of the product/i, owner: 'AGENTS' },
-  { fact: 'workaround signals are stop conditions', pattern: /workaround signals are stop conditions/i, owner: 'AGENTS' },
+  { fact: 'workaround signals are stop conditions', pattern: /workaround signals \(stop conditions\)/i, owner: 'ENGINEERING' },
   { fact: 'what a layer may import', pattern: /never imports/i, owner: 'ARCHITECTURE' },
   { fact: 'accessibility', pattern: /WCAG/, owner: 'DESIGN' },
 ];

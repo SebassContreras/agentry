@@ -14,6 +14,15 @@
 8. **Confirm with a source.** Before committing to an approach that rests on a fact outside the repo (an API's behavior, a version, a platform rule), look it up, prefer the official specification or docs, and cite `Source: <url> (accessed YYYY-MM-DD)`. Skip it for what a contract already says or what running it settles.
 9. **Docs travel with behavior.** A change of behavior updates the contract or doc that describes it in the same task.
 
+## Workaround signals (Stop conditions)
+
+If honoring a decision or instruction requires any of the following, stop and report the conflict before writing code:
+1. **Shims or artificial wrappers:** adding a layer only to bypass a constraint.
+2. **Duplicated code:** copying logic to avoid touching an existing module.
+3. **Special-case conditional patches:** ad-hoc `if` branches for specific cases.
+4. **Silenced exceptions:** empty `catch` or `except` blocks that hide underlying errors.
+5. **Suppressed linters or skipped tests:** disabling checks instead of solving the cause.
+
 ## Event-driven code hygiene
 
 Do not run dead-code linters on routine forward additions or new features. Run an orphan check **only** when triggered by:
