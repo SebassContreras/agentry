@@ -19,19 +19,24 @@ Run **inside the target repository**. This skill copies and fits the scaffold; i
 
 ## Init
 
-1. **Ask once** (skip what the user already said): project name; the goal in one or two sentences; the language the user speaks; the language of the product's own text if it has a UI or messages (not the same as the language the user speaks); which agents they use (default Claude Code and Antigravity); and the kind of project: *software with a UI*, *software without a UI* (CLI, API, library), or *content* (docs, video, writing, research). Do not guess the kind: `DESIGN.md` depends on it.
+1. **Ask once** (skip what the user already said):
+   - Project name and goal in 1–2 sentences.
+   - Language the user speaks, and the language of the product's own text if it has a UI or messages (not the same as the language the user speaks).
+   - Project kind: *software with a UI*, *software without a UI* (CLI, API, library), or *content* (docs, video, research).
+   - Collaboration mode: *solo* (commit directly to main) or *team* (branches and pull requests).
+   - Planning location: *repo* (local `planning/` folder) or *github* (GitHub Issues).
 2. **Copy** from `${CLAUDE_SKILL_DIR}/assets/` with a file copy, not by retyping:
 
    | From `assets/` | To the repository |
    |---|---|
    | `contracts/AGENTS.md`, `PRODUCT.md`, `ARCHITECTURE.md`, `ENGINEERING.md`, `TESTING.md`, `OPERATIONS.md` | the root, same names |
    | `contracts/design-ui.md` or `design-interface.md` or `design-content.md` (by kind) | `DESIGN.md` |
-   | `planning/roadmap.md` | `planning/roadmap.md`, and create `planning/specs/` with an empty `.gitkeep` so git keeps the folder |
    | `playbooks/*.md` | `.agents/playbooks/` |
+   | `planning/roadmap.md` (only if planning is `repo`) | `planning/roadmap.md`, and create `planning/specs/` with an empty `.gitkeep` |
 
-3. **Fill the contracts.** Replace `{{PROJECT_NAME}}` and `{{GOAL}}`. For each `<fill: …>` marker, read the repository first (manifests and scripts, lockfiles, CI, folders, the README, existing docs) and write only what the repository cannot show on its own. If you cannot know it yet, leave the marker: the plan playbook fills it. Do not invent. Keep `AGENTS.md` under 100 lines and put the user's language in its language rule (hard rule 3) and the product's language in `DESIGN.md`. Each fact lives in one contract only: if another contract already owns it (see the `Owns` line), link to it instead of repeating it.
+3. **Fill the contracts.** Replace `{{PROJECT_NAME}}` and `{{GOAL}}`. Set `Collaboration` and `Planning` in `AGENTS.md`. For each `<fill: …>` marker, read the repository first (manifests and scripts, lockfiles, CI, folders, the README, existing docs) and write only what the repository cannot show on its own. Keep `AGENTS.md` under 100 lines. Put the user's language in `AGENTS.md` (hard rule 3) and the product's language in `DESIGN.md`. Each fact lives in one contract only.
 
-   For a project that is not software (video, writing, research), keep the same files and change what they hold: `ENGINEERING.md` holds the production standards (tools, file naming, review steps) and drops the code principles that do not apply; `TESTING.md` holds the review checklist that says when a piece is done; `DESIGN.md` is the content variant.
+   For a project that is not software (video, writing, research), keep the same files and change what they hold: `ENGINEERING.md` holds production standards and drops code principles; `TESTING.md` holds the review checklist; `DESIGN.md` is the content variant.
 4. **Report** the files created and the unfilled markers, and suggest the first commit as `chore: add agent contracts` (no trailers). Tell the user the next step is to ask the agent to plan the project; `AGENTS.md` routes that to `.agents/playbooks/plan.md`. Then offer the optional extras below as a question, not as something already installed. Stop there.
 
 ## Update
