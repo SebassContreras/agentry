@@ -1,6 +1,6 @@
 # Product
 
-> Owns: why the project exists, who it serves and what it does today · Not here: status or order of work (planning/roadmap.md), technical choices (ARCHITECTURE.md), standards (ENGINEERING.md)
+> Owns: why the project exists, who it serves and what it does today · Not here: status or order of work (the planning tracker), technical choices (ARCHITECTURE.md), standards (ENGINEERING.md)
 
 ## Vision
 
