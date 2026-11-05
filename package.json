@@ -1,0 +1,22 @@
+{
+  "name": "agentry",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Agent contracts and playbooks for high-speed coding with zero friction. Event-driven hygiene, single-responsibility contracts, and ceremony scaled by risk.",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test \"tests/*.test.mjs\""
+  },
+  "keywords": [
+    "agentskills",
+    "ai",
+    "agent-governance",
+    "claude-code",
+    "antigravity"
+  ],
+  "author": "SebassContreras",
+  "license": "MIT"
+}
