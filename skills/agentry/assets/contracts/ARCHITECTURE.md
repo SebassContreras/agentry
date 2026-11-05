@@ -10,6 +10,10 @@
 
 <fill: what talks to what, what crosses a process or network edge, and the external systems involved>
 
+## Dependencies
+
+<fill: core frameworks, libraries and primitives allowed across layers, and the rule for proposing new ones>
+
 ## Invariants
 
 <fill: rules that hold across layers, for example "domain code never imports an adapter or a transport">

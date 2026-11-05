@@ -32,6 +32,7 @@ const ownerOfSection = [
   { section: 'Setup', owner: 'OPERATIONS' },
   { section: 'Build and release', owner: 'OPERATIONS' },
   { section: 'Layers', owner: 'ARCHITECTURE' },
+  { section: 'Dependencies', owner: 'ARCHITECTURE' },
   { section: 'Principles', owner: 'ENGINEERING' },
   { section: 'Workaround signals (Stop conditions)', owner: 'ENGINEERING' },
   { section: 'Event-driven code hygiene', owner: 'ENGINEERING' },
