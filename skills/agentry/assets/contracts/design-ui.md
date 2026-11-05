@@ -6,13 +6,19 @@
 
 <fill: the language of every string the user sees, and whether more languages are planned (i18n); date, number and currency formats. This is the product's language, not the one the agent speaks to the developer (AGENTS.md)>
 
-## Tokens
+## Tokens and theme
 
-<fill: colour roles, type scale, spacing scale and radii. Values live here and are never hard-coded elsewhere>
+<fill: pointer to the design system's source of truth (e.g. app/globals.css, tailwind.config.ts, tokens.json).
+Rule: never hardcode hex colors, magic pixel margins or ad-hoc shadows inline; always reference defined theme tokens and CSS variables.>
 
-## Components and states
+## UI and interaction states
 
-<fill: the components, and the states each one handles: default, hover, focus, disabled, loading, empty, error>
+Every interactive component must explicitly provide visual handling for:
+- **Default and hover:** standard and pointer feedback.
+- **Focus:** visible focus ring meeting WCAG (keyboard navigation).
+- **Disabled:** distinct visual cue; pointer events blocked.
+- **Loading:** skeleton loaders or spinners; prevents layout shifts.
+- **Empty and error:** clear empty-state visual and accessible error message.
 
 ## Accessibility
 
