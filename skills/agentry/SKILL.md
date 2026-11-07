@@ -65,5 +65,9 @@ Agentry ships no mandatory hooks or blocking linters. After scaffolding, ask the
 
 - **Dead-code hygiene tool:** configure an on-demand command in `OPERATIONS.md` matching the stack (`knip` for TS/JS, `vulture` + `ruff` for Python, `cargo machete` for Rust).
 - **Block risky git commands** (`--no-verify`, force-push `main`, `git add .env`, AI attribution in commits): a light pre-commit or `PreToolUse` hook.
-- **Keep secrets unread:** `permissions.deny` in `.claude/settings.json` for `.env`, `secrets/` and key files.
+- **Keep secrets unread:** `permissions.deny` in `.claude/settings.json` for `.env`, `secrets/` and key files:
+  `{"permissions":{"deny":["Read(./.env)","Read(./.env.*)","Read(./**/*.pem)","Read(./**/*.key)","Read(~/.ssh/**)"]}}`
+- **Claude Code subagents (never write files):** copy any of `claude-code/agents/*.md` into `.claude/agents/`. `research` (Haiku) returns a fact sheet with sources, keeping web searches out of the main context. `spec-review` and `diff-review` (Sonnet) audit a spec or a diff against the contracts in a clean context. `dead-code-check` (Haiku) runs the on-demand hygiene command from `OPERATIONS.md` only after dependency changes, replaced exports, deleted tests or pivots.
+- **Antigravity subagents:** copy any of `antigravity/agents/*.md` into `.agents/agents/`: `spec-review`, `diff-review`, `dead-code-check`. There is no `research` variant because Antigravity already ships a built-in read-only `research` subagent with web search.
+- **Model and effort defaults:** in `.claude/settings.json`, set `model` to `sonnet` and pin effort per model (`claude-sonnet-5-5`: `high`, `claude-opus-5-5`: `medium`, `claude-haiku-5-5`: `medium`). Never switch model or effort mid-session: it breaks the prompt cache. Leave `fastMode` off on a subscription, where it bills usage credits separately.
 - **CI:** run the verify command from `TESTING.md` on every push.

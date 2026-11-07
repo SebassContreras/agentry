@@ -1,6 +1,6 @@
 {
   "name": "agentry",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "description": "Agent contracts and playbooks for high-speed coding with zero friction. Event-driven hygiene, single-responsibility contracts, and ceremony scaled by risk.",
   "type": "module",

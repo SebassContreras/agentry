@@ -56,3 +56,46 @@ for (const variant of ['design-ui', 'design-interface', 'design-content']) {
     assert.match(read('contracts', `${variant}.md`), /language/i);
   });
 }
+
+// Claude Code subagents are optional extras: they must be read-only and pinned to a model.
+const AGENTS_DIR = join(ASSETS, 'claude-code', 'agents');
+const agentFiles = readdirSync(AGENTS_DIR).filter((file) => file.endsWith('.md'));
+const READ_ONLY_TOOLS = ['Read', 'Grep', 'Glob', 'WebSearch', 'WebFetch'];
+// Agents that run a command; their body must restrict Bash to read-only or a single configured command.
+const BASH_AGENTS = ['diff-review.md', 'dead-code-check.md'];
+const agentText = (file) => lf(readFileSync(join(AGENTS_DIR, file), 'utf8'));
+
+for (const file of agentFiles) {
+  test(`subagent ${file}: frontmatter names it after the file and pins a model`, () => {
+    const text = agentText(file);
+    assert.equal(/^name: (.+)$/m.exec(text)?.[1], file.replace(/\.md$/, ''));
+    assert.match(text, /^description: \S/m);
+    assert.match(text, /^model: (haiku|sonnet|opus)$/m);
+  });
+
+  test(`subagent ${file}: only receives read-only tools`, () => {
+    const tools = /^tools: (.+)$/m.exec(agentText(file))[1].split(',').map((tool) => tool.trim());
+    const allowed = BASH_AGENTS.includes(file) ? [...READ_ONLY_TOOLS, 'Bash'] : READ_ONLY_TOOLS;
+    assert.deepEqual(tools.filter((tool) => !allowed.includes(tool)), []);
+    if (tools.includes('Bash')) assert.match(agentText(file), /Bash is (allowed only|for)/);
+  });
+}
+
+// Antigravity subagents: only use runtime-injected tools (view_file, run_command); grep_search is ignored by the runtime, so read-only git grep is used in sandbox.
+const AG_DIR = join(ASSETS, 'antigravity', 'agents');
+const AG_TOOLS = ['view_file', 'run_command'];
+for (const file of readdirSync(AG_DIR).filter((f) => f.endsWith('.md'))) {
+  test(`antigravity subagent ${file}: documented tools, pinned model, sandboxed commands`, () => {
+    const text = lf(readFileSync(join(AG_DIR, file), 'utf8'));
+    assert.equal(/^name: (.+)$/m.exec(text)?.[1], file.replace(/\.md$/, ''));
+    assert.match(text, /^subagent: true$/m);
+    assert.match(text, /^mainAgent: false$/m);
+    assert.match(text, /^model: (inherit|flash|pro)$/m);
+    const tools = /^tools: \[(.+)\]$/m.exec(text)[1].split(',').map((t) => t.trim());
+    assert.deepEqual(tools.filter((t) => !AG_TOOLS.includes(t)), []);
+    if (tools.includes('run_command')) {
+      assert.match(text, /^commandExecutionPolicy: sandbox$/m);
+      assert.match(text, /run_command is (allowed only|for)/);
+    }
+  });
+}

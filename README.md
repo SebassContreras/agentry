@@ -80,6 +80,18 @@ Agentry understands multiple workflows (offline local markdown vs. GitHub Issues
     └── roadmap.md             # Living queue of active work only (no archived clutter)
 ```
 
+Optional Claude Code subagents (none write files), offered as a question and never installed by default:
+
+```text
+└── .claude/agents/
+    ├── research.md            # Haiku: external facts as a fact sheet with sources
+    ├── spec-review.md         # Sonnet: audits a spec against the contracts
+    ├── diff-review.md         # Sonnet: audits a diff (read-only git)
+    └── dead-code-check.md     # Haiku: runs the OPERATIONS.md hygiene command
+```
+
+The same three audit agents exist for Antigravity under `.agents/agents/` (Antigravity already ships a built-in `research` subagent), using `flash`/`pro` models and sandboxed commands.
+
 ---
 
 ## Installation & Usage
@@ -151,7 +163,7 @@ The skill automatically converts open specs from `planning/roadmap.md` into GitH
 npm test
 ```
 
-72 tests run natively using Node's built-in test runner (`node:test`) with zero dependencies.
+90 tests run natively using Node's built-in test runner (`node:test`) with zero dependencies.
 
 ---
 
