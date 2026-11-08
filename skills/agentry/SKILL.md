@@ -46,6 +46,22 @@ Run **inside the target repository**. This skill copies and fits the scaffold; i
    For a project that is not software (video, writing, research), keep the same files and change what they hold: `ENGINEERING.md` holds production standards and drops code principles; `TESTING.md` holds the review checklist; `DESIGN.md` is the content variant.
 4. **Report** the files created and the unfilled markers, and suggest the first commit as `chore: add agent contracts` (no trailers). Tell the user the next step is to ask the agent to plan the project; `AGENTS.md` routes that to `.agents/playbooks/plan.md`. Then offer the optional extras below as a question, not as something already installed. Stop there.
 
+### Init with a plan that already exists
+
+If the user already has a plan (in the conversation, a document or an issue), run init as above and ask only what the plan does not answer. Then **distribute the plan; never paste it into one contract**. Each fact goes to the one place that owns it:
+
+| The plan says… | It goes to |
+|---|---|
+| why the project exists, who it serves, what it does now, product decisions | `PRODUCT.md` (present tense, no sequencing) |
+| layers, boundaries, allowed dependencies, technical decisions | `ARCHITECTURE.md` |
+| commands, environment, release and recovery steps | `OPERATIONS.md` |
+| tools, naming, test framework, coverage rules | the "This project" section of `ENGINEERING.md` or `TESTING.md` |
+| interface, tokens, copy or content rules | `DESIGN.md` |
+| order, phases, dates, later ideas | the planning tracker: roadmap rows and `## Ideas` |
+| the first thin slice | one spec in the `plan.md` format; later specs only as roadmap rows |
+
+Write each decision with `Why:` and `Revisit if:` (and `Trade-off:` if it is hard to reverse). A sentence about order or a build detail inside `PRODUCT.md` is a misplaced fact: move it. After writing, commit the spec and run `spec-review` on it; the plan is input, not the spec.
+
 ## Update
 
 For each shipped file (contracts, playbooks) compare it with the repository's copy and show a diff per file; apply only what the user approves.

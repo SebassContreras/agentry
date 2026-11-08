@@ -29,6 +29,9 @@ const skillRows = [
   { name: 'ships no mandatory hooks', needle: 'Agentry ships no mandatory hooks' },
   { name: 'presents extras as a question', needle: 'suggest, never install by default' },
   { name: 'adapts the contracts to a project that is not software', needle: 'not software' },
+  { name: 'distributes an existing plan across the contracts', needle: 'distribute the plan; never paste it into one contract' },
+  { name: 'sends order and dates to the planning tracker', needle: 'order, phases, dates, later ideas' },
+  { name: 'reviews the spec made from an existing plan', needle: 'run `spec-review` on it; the plan is input, not the spec' },
 ];
 
 for (const row of skillRows) {

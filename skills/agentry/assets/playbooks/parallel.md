@@ -17,7 +17,7 @@ Run this from the main checkout, as the orchestrator. Each spec is implemented i
 5. **Launch one runner per spec.**
    - With the `spec-runner` subagent: start every runner in one message and let them run in the background, passing each its spec location. Permission prompts surface in the main session.
    - Without it: one worktree and one session per spec, from the main checkout: `git worktree add ../<repo>-NNN -b spec/NNN-feature`, then ask the agent there to run the `[agent]` tasks of spec NNN.
-6. **Review the next specs meanwhile.** Run `spec-review` on specs still waiting. It is read-only and needs no worktree.
+6. **Review the next specs meanwhile.** Commit the specs still waiting, then run `spec-review` on them. It edits only the spec and needs no worktree.
 7. **Gate each finished branch.** Run `review.md` (or the `diff-review` subagent) on the branch the runner reports, in a clean context. Fix blockers on that branch before merging.
 8. **Merge one at a time**, lowest ID first, per the Collaboration setting in `AGENTS.md`:
 
