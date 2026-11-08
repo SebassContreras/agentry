@@ -68,8 +68,8 @@ Agentry understands multiple workflows (offline local markdown vs. GitHub Issues
 ├── AGENTS.md                  # Traffic router, hard safety rules, and workflow configuration
 ├── PRODUCT.md                 # Vision, users, capabilities (present tense), and decisions (Why/Revisit if)
 ├── ARCHITECTURE.md            # Layers, boundaries, invariants, and allowed ## Dependencies
-├── ENGINEERING.md             # 11 core principles, workaround stop signals, and event-driven hygiene
-├── DESIGN.md                  # Tokens (pointing to globals.css), UI interaction states, and accessibility
+├── ENGINEERING.md             # 12 core principles, workaround stop signals, and event-driven hygiene
+├── DESIGN.md                  # By project kind: UI tokens, states and accessibility | CLI/API surface and errors | content voice and structure
 ├── TESTING.md                 # Fast verify commands, branch coverage, 4 partitions, and test placement
 ├── OPERATIONS.md              # Setup, run, build, environment variables, and on-demand hygiene recipes
 ├── .agents/playbooks/
@@ -108,12 +108,10 @@ Add `agentry` directly using the standard Agent Skills CLI (`skills.sh` / `agent
 
 ```bash
 # Add to current project
-npx skills add SebassContreras/agentry
-# or with pnpm
 pnpm dlx skills add SebassContreras/agentry
 
 # Install globally (available across all your projects)
-npx skills add -g SebassContreras/agentry
+pnpm dlx skills add -g SebassContreras/agentry
 ```
 
 <details>
@@ -166,10 +164,10 @@ The skill automatically converts open specs from `planning/roadmap.md` into GitH
 `agentry` is backed by an automated test suite enforcing contract invariants, single-responsibility separation, and template synchronization:
 
 ```bash
-npm test
+pnpm test
 ```
 
-99 tests run natively using Node's built-in test runner (`node:test`) with zero dependencies.
+The tests run natively using Node's built-in test runner (`node:test`) with zero dependencies.
 
 ---
 

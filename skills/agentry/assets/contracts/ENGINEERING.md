@@ -15,6 +15,7 @@
 9. **Confirm with a source.** Before committing to an approach that rests on an external API, library version, or platform rule, look it up in official docs via search and cite `Source: <url> (accessed YYYY-MM-DD)`. Never guess an API signature.
 10. **Decisions in code.** A non-obvious technical choice in code (an unusual algorithm, a performance trade-off, or an authorized exception) records its rationale and mitigation in a code comment.
 11. **Docs travel with behavior.** A change of behavior updates the contract, specification, or doc that describes it in the same task.
+12. **Weigh trade-offs.** A non-obvious or hard-to-reverse choice in a spec or design names the alternative it rejected, the cost of the one it takes, and a mitigation for that cost, recorded as `Trade-off:` in the spec's Design or the contract's Decisions. A reversible, obvious choice needs none: decide and move on.
 
 ## Workaround signals (Stop conditions)
 

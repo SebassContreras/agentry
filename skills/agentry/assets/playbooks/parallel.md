@@ -11,7 +11,9 @@ Run this from the main checkout, as the orchestrator. Each spec is implemented i
 3. **Mark them.** <fill:
    - repo: set each chosen row in planning/roadmap.md to `in progress` and commit it.
    - github: assign each chosen issue to yourself with `gh issue edit N --add-assignee @me`.>
-4. **Prepare worktrees.** Add `.claude/worktrees/` to `.gitignore`. List the gitignored files a fresh checkout needs (`.env`) in `.worktreeinclude`. Each worktree runs the Setup command from `OPERATIONS.md` before its first task.
+4. **Prepare worktrees.** Each worktree runs the Setup command from `OPERATIONS.md` before its first task.
+   - With the `spec-runner` subagent: add `.claude/worktrees/` to `.gitignore`, and list the gitignored files a fresh checkout needs (`.env`) in `.worktreeinclude`.
+   - Without it: the worktrees live next to the repository (`../<repo>-NNN`), so nothing needs ignoring; copy by hand the gitignored files a fresh checkout needs.
 5. **Launch one runner per spec.**
    - With the `spec-runner` subagent: start every runner in one message and let them run in the background, passing each its spec location. Permission prompts surface in the main session.
    - Without it: one worktree and one session per spec, from the main checkout: `git worktree add ../<repo>-NNN -b spec/NNN-feature`, then ask the agent there to run the `[agent]` tasks of spec NNN.

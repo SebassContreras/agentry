@@ -23,7 +23,7 @@
 | run, build, configure or release the project | OPERATIONS.md |
 | plan a feature or a project | .agents/playbooks/plan.md |
 | fix a bug, change direction or record a decision | .agents/playbooks/change.md |
-| review a diff or close a spec | .agents/playbooks/review.md |
+| review a spec before coding, review a diff or close a spec | .agents/playbooks/review.md |
 | run several reviewed specs at once | .agents/playbooks/parallel.md |
 
 When you decide something, name the contract and section you used ("per ENGINEERING.md §2"). If none applied, say so.

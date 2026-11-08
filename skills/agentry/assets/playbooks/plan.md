@@ -11,8 +11,9 @@
    <fill:
    - repo: write planning/specs/NNN-feature.md and add one row to planning/roadmap.md.
    - github: run gh issue create --title "NNN — feature" --body "..." with the spec content.>
-5. List the contract changes the plan implies: a layer or dependency in ARCHITECTURE.md, a command in OPERATIONS.md. Show them as a diff, apply them once approved, and record any lasting decision in the affected contract with `Why:` and `Revisit if:`.
-6. Report, and stop: planning does not start executing.
+5. List the contract changes the plan implies: a layer or dependency in ARCHITECTURE.md, a command in OPERATIONS.md. Show them as a diff, apply them once approved, and record any lasting decision in the affected contract with `Why:` and `Revisit if:` (and `Trade-off:` if it is hard to reverse).
+6. Review the spec before any code: run the `spec-review` subagent, or the "Reviewing a spec" section of `review.md` in a clean context. Fix blockers in the spec.
+7. Report, and stop: planning does not start executing.
 
 ## Spec format
 
@@ -26,7 +27,7 @@ What works when this is done and how to check it, in 2–3 lines.
 - R1: A checkable outcome.
 
 ## Design
-- D1 (R1): A decision, with its Why and Revisit if. This section is optional.
+- D1 (R1): A decision, with its Why and Revisit if, and its Trade-off if it is hard to reverse. This section is optional.
 
 ## Tasks
 - [ ] 003/T001 [agent] Do one thing — covers D1

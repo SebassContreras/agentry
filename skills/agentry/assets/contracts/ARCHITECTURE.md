@@ -23,4 +23,5 @@
 <fill: recorded architecture decisions. Every decision must state:
 - Decision: what was decided
 - Why: the concrete reason
-- Revisit if: the observable condition that invalidates it>
+- Revisit if: the observable condition that invalidates it
+- Trade-off (only if hard to reverse): the rejected alternative, the cost of this choice and its mitigation>

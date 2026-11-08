@@ -114,6 +114,24 @@ for (const name of PLAYBOOKS) {
   });
 }
 
+test('review playbook owns the spec checklist and enforces the trade-off principle', () => {
+  const review = read('playbooks', 'review.md');
+  assert.match(review, /^## Reviewing a spec/m);
+  assert.match(review, /§12/);
+});
+
+for (const platform of ['claude-code', 'antigravity']) {
+  test(`${platform} spec-review delegates its checklist to the review playbook`, () => {
+    assert.match(read(platform, 'agents', 'spec-review.md'), /Reviewing a spec.*review\.md/s);
+  });
+}
+
+for (const file of ['PRODUCT', 'ARCHITECTURE']) {
+  test(`${file} decisions can record a trade-off`, () => {
+    assert.match(read('contracts', `${file}.md`), /- Trade-off/);
+  });
+}
+
 test('the roadmap template has the columns the plan playbook uses', () => {
   assert.match(read('planning', 'roadmap.md'), /\| ID\s+\| Spec\s+\| Status\s+\| Depends on\s+\|/);
 });
