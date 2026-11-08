@@ -62,10 +62,12 @@ const AGENTS_DIR = join(ASSETS, 'claude-code', 'agents');
 const agentFiles = readdirSync(AGENTS_DIR).filter((file) => file.endsWith('.md'));
 const READ_ONLY_TOOLS = ['Read', 'Grep', 'Glob', 'WebSearch', 'WebFetch'];
 // Agents that run a command; their body must restrict Bash to read-only or a single configured command.
-const BASH_AGENTS = ['diff-review.md', 'dead-code-check.md', 'spec-runner.md'];
-// The only agent allowed to write: it must run in its own worktree.
+const BASH_AGENTS = ['diff-review.md', 'dead-code-check.md', 'spec-runner.md', 'spec-review.md'];
+// spec-runner writes code: it must run in its own worktree.
 const WRITE_AGENTS = ['spec-runner.md'];
 const WRITE_TOOLS = ['Edit', 'Write'];
+// spec-review may edit the spec file only (Edit, never Write); it needs no worktree.
+const EDIT_ONLY_AGENTS = ['spec-review.md'];
 const agentText = (file) => lf(readFileSync(join(AGENTS_DIR, file), 'utf8'));
 
 for (const file of agentFiles) {
@@ -82,6 +84,7 @@ for (const file of agentFiles) {
       ...READ_ONLY_TOOLS,
       ...(BASH_AGENTS.includes(file) ? ['Bash'] : []),
       ...(WRITE_AGENTS.includes(file) ? WRITE_TOOLS : []),
+      ...(EDIT_ONLY_AGENTS.includes(file) ? ['Edit'] : []),
     ];
     assert.deepEqual(tools.filter((tool) => !allowed.includes(tool)), []);
     if (tools.includes('Bash')) assert.match(agentText(file), /Bash is (allowed only|for)/);
@@ -94,6 +97,15 @@ test('subagent spec-runner: isolated in a worktree, never pushes, merges or skip
   assert.doesNotMatch(text, /WebSearch|WebFetch/);
   assert.match(text, /Never push, merge, rebase, reset/);
   assert.match(text, /No trailers, no `--no-verify`/);
+});
+
+test('subagent spec-review: edits only the spec and never writes code', () => {
+  const text = agentText('spec-review.md');
+  assert.doesNotMatch(/^tools: (.+)$/m.exec(text)[1], /Write/);
+  assert.match(text, /read-only git commands: `git status`, `git diff`, `git log`/);
+  assert.match(text, /uncommitted changes, stop and edit nothing/);
+  assert.match(text, /Edit only the spec/);
+  assert.match(text, /Never touch code, contracts/);
 });
 
 test('only write-capable subagents declare isolation', () => {

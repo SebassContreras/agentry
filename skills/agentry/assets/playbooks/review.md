@@ -1,10 +1,10 @@
 # Playbook: review
 
-> Owns: auditing a spec before code, a diff or a finished spec against the contracts · Not here: changing code or rewriting a spec; a review only reports
+> Owns: auditing a spec before code, a diff or a finished spec against the contracts · Not here: changing code; a diff review only reports, a spec review may fix the spec itself
 
 ## Reviewing a spec (before code)
 
-Read the spec and every contract that exists, and cite file and line for every finding, in this order:
+Review a spec that is committed, in a clean context, so every fix shows up as a diff. Read the spec and every contract that exists, and cite file and line for every finding, in this order:
 
 1. **Contradictions** with `AGENTS.md`, `PRODUCT.md`, `ARCHITECTURE.md`, `ENGINEERING.md`, `TESTING.md`, `OPERATIONS.md`, `DESIGN.md` or a recorded decision.
 2. **Unverifiable requirements:** no `[test]` task, no acceptance criterion, no partitions.
@@ -14,7 +14,7 @@ Read the spec and every contract that exists, and cite file and line for every f
 6. **Unweighed choices:** a non-obvious or hard-to-reverse decision with no rejected alternative, cost and mitigation (`ENGINEERING.md` §12).
 7. **What is missing:** uncovered edge cases, migration, docs to update.
 
-Verdict: `ready to code`, or `needs another pass, because …`. Do not rewrite the spec.
+Fix in the spec what the contracts settle on their own and list each fix. Leave anything that needs a product or design decision unfixed and mark it blocking. Edit only the spec. Verdict: `ready to code`, or `needs another pass, because …`.
 
 ## Reviewing a diff or a finished spec
 

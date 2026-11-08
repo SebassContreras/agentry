@@ -81,18 +81,18 @@ Agentry understands multiple workflows (offline local markdown vs. GitHub Issues
     └── roadmap.md             # Living queue of active work only (no archived clutter)
 ```
 
-Optional Claude Code subagents (only `spec-runner` writes, and only inside its own worktree), offered as a question and never installed by default:
+Optional Claude Code subagents (`spec-runner` writes code, only inside its own worktree; `spec-review` edits only the spec it audits), offered as a question and never installed by default:
 
 ```text
 └── .claude/agents/
     ├── research.md            # Haiku: external facts as a fact sheet with sources
-    ├── spec-review.md         # Sonnet: audits a spec against the contracts
+    ├── spec-review.md         # Sonnet: audits a spec against the contracts and fixes the spec itself
     ├── diff-review.md         # Sonnet: audits a diff (read-only git)
     ├── dead-code-check.md     # Haiku: runs the OPERATIONS.md hygiene command
     └── spec-runner.md         # Sonnet: implements every [agent] task of one reviewed spec in an isolated worktree
 ```
 
-The same three audit agents exist for Antigravity under `.agents/agents/` (Antigravity already ships a built-in `research` subagent), using `flash`/`pro` models and sandboxed commands. `spec-runner` has no Antigravity variant; use the manual worktree path in `parallel.md`.
+The same three audit agents exist for Antigravity under `.agents/agents/` (Antigravity already ships a built-in `research` subagent), using `flash`/`pro` models and sandboxed commands. They only report: Antigravity subagents get no edit tool, so its `spec-review` lists the fixes for you to apply. `spec-runner` has no Antigravity variant; use the manual worktree path in `parallel.md`.
 
 ### Several specs at once
 

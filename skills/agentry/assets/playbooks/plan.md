@@ -12,7 +12,7 @@
    - repo: write planning/specs/NNN-feature.md and add one row to planning/roadmap.md.
    - github: run gh issue create --title "NNN — feature" --body "..." with the spec content.>
 5. List the contract changes the plan implies: a layer or dependency in ARCHITECTURE.md, a command in OPERATIONS.md. Show them as a diff, apply them once approved, and record any lasting decision in the affected contract with `Why:` and `Revisit if:` (and `Trade-off:` if it is hard to reverse).
-6. Review the spec before any code: run the `spec-review` subagent, or the "Reviewing a spec" section of `review.md` in a clean context. Fix blockers in the spec.
+6. Commit the spec, then review it before any code: run the `spec-review` subagent, or the "Reviewing a spec" section of `review.md` in a clean context. Fix blockers in the spec.
 7. Report, and stop: planning does not start executing.
 
 ## Spec format
