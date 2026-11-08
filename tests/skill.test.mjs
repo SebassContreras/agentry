@@ -62,7 +62,10 @@ const AGENTS_DIR = join(ASSETS, 'claude-code', 'agents');
 const agentFiles = readdirSync(AGENTS_DIR).filter((file) => file.endsWith('.md'));
 const READ_ONLY_TOOLS = ['Read', 'Grep', 'Glob', 'WebSearch', 'WebFetch'];
 // Agents that run a command; their body must restrict Bash to read-only or a single configured command.
-const BASH_AGENTS = ['diff-review.md', 'dead-code-check.md'];
+const BASH_AGENTS = ['diff-review.md', 'dead-code-check.md', 'spec-runner.md'];
+// The only agent allowed to write: it must run in its own worktree.
+const WRITE_AGENTS = ['spec-runner.md'];
+const WRITE_TOOLS = ['Edit', 'Write'];
 const agentText = (file) => lf(readFileSync(join(AGENTS_DIR, file), 'utf8'));
 
 for (const file of agentFiles) {
@@ -75,11 +78,28 @@ for (const file of agentFiles) {
 
   test(`subagent ${file}: only receives read-only tools`, () => {
     const tools = /^tools: (.+)$/m.exec(agentText(file))[1].split(',').map((tool) => tool.trim());
-    const allowed = BASH_AGENTS.includes(file) ? [...READ_ONLY_TOOLS, 'Bash'] : READ_ONLY_TOOLS;
+    const allowed = [
+      ...READ_ONLY_TOOLS,
+      ...(BASH_AGENTS.includes(file) ? ['Bash'] : []),
+      ...(WRITE_AGENTS.includes(file) ? WRITE_TOOLS : []),
+    ];
     assert.deepEqual(tools.filter((tool) => !allowed.includes(tool)), []);
     if (tools.includes('Bash')) assert.match(agentText(file), /Bash is (allowed only|for)/);
   });
 }
+
+test('subagent spec-runner: isolated in a worktree, never pushes, merges or skips hooks', () => {
+  const text = agentText('spec-runner.md');
+  assert.match(text, /^isolation: worktree$/m);
+  assert.doesNotMatch(text, /WebSearch|WebFetch/);
+  assert.match(text, /Never push, merge, rebase, reset/);
+  assert.match(text, /No trailers, no `--no-verify`/);
+});
+
+test('only write-capable subagents declare isolation', () => {
+  const isolated = agentFiles.filter((file) => /^isolation:/m.test(agentText(file)));
+  assert.deepEqual(isolated, WRITE_AGENTS);
+});
 
 // Antigravity subagents: only use runtime-injected tools (view_file, run_command); grep_search is ignored by the runtime, so read-only git grep is used in sandbox.
 const AG_DIR = join(ASSETS, 'antigravity', 'agents');

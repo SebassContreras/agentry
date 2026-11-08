@@ -75,22 +75,28 @@ Agentry understands multiple workflows (offline local markdown vs. GitHub Issues
 ├── .agents/playbooks/
 │   ├── plan.md                # Thin-slice feature planning (<80 lines per spec, deleted on completion)
 │   ├── change.md              # Discard-and-redo, delete-first on pivots, and orphan sweeps
-│   └── review.md              # Clean-context reviewer checklist (audits diffs without modifying code)
+│   ├── review.md              # Clean-context reviewer checklist (audits diffs without modifying code)
+│   └── parallel.md            # Run several reviewed specs at once, one git worktree each, merged one at a time
 └── planning/                  # (Only in 'repo' mode)
     └── roadmap.md             # Living queue of active work only (no archived clutter)
 ```
 
-Optional Claude Code subagents (none write files), offered as a question and never installed by default:
+Optional Claude Code subagents (only `spec-runner` writes, and only inside its own worktree), offered as a question and never installed by default:
 
 ```text
 └── .claude/agents/
     ├── research.md            # Haiku: external facts as a fact sheet with sources
     ├── spec-review.md         # Sonnet: audits a spec against the contracts
     ├── diff-review.md         # Sonnet: audits a diff (read-only git)
-    └── dead-code-check.md     # Haiku: runs the OPERATIONS.md hygiene command
+    ├── dead-code-check.md     # Haiku: runs the OPERATIONS.md hygiene command
+    └── spec-runner.md         # Sonnet: implements every [agent] task of one reviewed spec in an isolated worktree
 ```
 
-The same three audit agents exist for Antigravity under `.agents/agents/` (Antigravity already ships a built-in `research` subagent), using `flash`/`pro` models and sandboxed commands.
+The same three audit agents exist for Antigravity under `.agents/agents/` (Antigravity already ships a built-in `research` subagent), using `flash`/`pro` models and sandboxed commands. `spec-runner` has no Antigravity variant; use the manual worktree path in `parallel.md`.
+
+### Several specs at once
+
+Review a spec, commit it, and repeat for the next ones. Then ask the agent to run them in parallel: `parallel.md` launches one `spec-runner` per independent spec (each in its own worktree and branch), reviews the waiting specs meanwhile, gates every branch with `diff-review`, and merges them one at a time. Runners never touch the roadmap, push or merge.
 
 ---
 
@@ -163,7 +169,7 @@ The skill automatically converts open specs from `planning/roadmap.md` into GitH
 npm test
 ```
 
-90 tests run natively using Node's built-in test runner (`node:test`) with zero dependencies.
+99 tests run natively using Node's built-in test runner (`node:test`) with zero dependencies.
 
 ---
 

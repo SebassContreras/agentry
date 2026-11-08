@@ -3,7 +3,7 @@ name: agentry
 description: >-
   Scaffolds agent contracts and playbooks for high-speed coding with zero friction: an AGENTS.md
   router, single-responsibility contracts (PRODUCT, ARCHITECTURE, ENGINEERING, DESIGN, TESTING,
-  OPERATIONS), playbooks (plan, change, review) and a roadmap.
+  OPERATIONS), playbooks (plan, change, review, parallel) and a roadmap.
   Use when: "init agentry", "set up the agent contracts", "scaffold this project",
   "start a new project with agentry", "update agentry", "upgrade agentry".
 ---
@@ -38,7 +38,7 @@ Run **inside the target repository**. This skill copies and fits the scaffold; i
 
 3. **Fill the contracts for the chosen lane.** Replace `{{PROJECT_NAME}}` and `{{GOAL}}`.
    - Set `Collaboration` in `AGENTS.md`.
-   - Fill the `Planning` markers in `AGENTS.md` and `plan.md` **strictly with the single chosen lane**:
+   - Fill the `Planning` markers in `AGENTS.md`, `plan.md` and `parallel.md` **strictly with the single chosen lane**:
      - **If `repo`:** write only the `planning/roadmap.md` and `planning/specs/` instructions. Omit any mention of GitHub Issues.
      - **If `github`:** write only the `gh issue list` and `gh issue create` instructions. Omit any mention of `planning/` or `roadmap.md`.
    - For all other `<fill: …>` markers, read the repository first and write only what the repository cannot show on its own. Keep `AGENTS.md` under 100 lines. Put the user's language in `AGENTS.md` (hard rule 3) and the product's language in `DESIGN.md`. Each fact lives in one contract only.
@@ -56,8 +56,8 @@ For each shipped file (contracts, playbooks) compare it with the repository's co
 ### Switching planning lanes (`repo` ↔ `github`)
 
 If a project needs to switch from local `repo` specs to `github` (or vice versa):
-- **From `repo` to `github`:** run `gh issue create` for any open spec in `planning/roadmap.md`, delete the `planning/` folder, and update the planning lines in `AGENTS.md` and `plan.md` to the GitHub commands.
-- **From `github` to `repo`:** fetch open issues via `gh issue list`, scaffold `planning/roadmap.md` and `planning/specs/`, and update the planning lines in `AGENTS.md` and `plan.md` to the repo commands.
+- **From `repo` to `github`:** run `gh issue create` for any open spec in `planning/roadmap.md`, delete the `planning/` folder, and update the planning lines in `AGENTS.md`, `plan.md` and `parallel.md` to the GitHub commands.
+- **From `github` to `repo`:** fetch open issues via `gh issue list`, scaffold `planning/roadmap.md` and `planning/specs/`, and update the planning lines in `AGENTS.md`, `plan.md` and `parallel.md` to the repo commands.
 
 ## Optional extras (suggest, never install by default)
 
@@ -67,7 +67,8 @@ Agentry ships no mandatory hooks or blocking linters. After scaffolding, ask the
 - **Block risky git commands** (`--no-verify`, force-push `main`, `git add .env`, AI attribution in commits): a light pre-commit or `PreToolUse` hook.
 - **Keep secrets unread:** `permissions.deny` in `.claude/settings.json` for `.env`, `secrets/` and key files:
   `{"permissions":{"deny":["Read(./.env)","Read(./.env.*)","Read(./**/*.pem)","Read(./**/*.key)","Read(~/.ssh/**)"]}}`
-- **Claude Code subagents (never write files):** copy any of `claude-code/agents/*.md` into `.claude/agents/`. `research` (Haiku) returns a fact sheet with sources, keeping web searches out of the main context. `spec-review` and `diff-review` (Sonnet) audit a spec or a diff against the contracts in a clean context. `dead-code-check` (Haiku) runs the on-demand hygiene command from `OPERATIONS.md` only after dependency changes, replaced exports, deleted tests or pivots.
+- **Claude Code subagents:** copy any of `claude-code/agents/*.md` into `.claude/agents/`. `research` (Haiku) returns a fact sheet with sources, keeping web searches out of the main context. `spec-review` and `diff-review` (Sonnet) audit a spec or a diff against the contracts in a clean context. `dead-code-check` (Haiku) runs the on-demand hygiene command from `OPERATIONS.md` only after dependency changes, replaced exports, deleted tests or pivots. The three audit agents and `research` never write files.
+- **`spec-runner` (Claude Code, the only agent that writes):** implements every `[agent]` task of one reviewed spec in its own git worktree (`isolation: worktree`), commits per task and reports its branch; it never pushes or merges. Needs `.agents/playbooks/parallel.md` to run several specs at once. Antigravity has no variant: its subagents only get `view_file` and `run_command`, so use the manual worktree path in `parallel.md`.
 - **Antigravity subagents:** copy any of `antigravity/agents/*.md` into `.agents/agents/`: `spec-review`, `diff-review`, `dead-code-check`. There is no `research` variant because Antigravity already ships a built-in read-only `research` subagent with web search.
 - **Model and effort defaults:** in `.claude/settings.json`, set `model` to `sonnet` and pin effort per model (`claude-sonnet-5-5`: `high`, `claude-opus-5-5`: `medium`, `claude-haiku-5-5`: `medium`). Never switch model or effort mid-session: it breaks the prompt cache. Leave `fastMode` off on a subscription, where it bills usage credits separately.
 - **CI:** run the verify command from `TESTING.md` on every push.

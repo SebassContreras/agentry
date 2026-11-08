@@ -10,7 +10,7 @@ const ASSETS = join(dirname(fileURLToPath(import.meta.url)), '..', 'skills', 'ag
 const read = (...parts) => readFileSync(join(ASSETS, ...parts), 'utf8').replace(/\r\n/g, '\n');
 
 const CONTRACT_FILES = ['AGENTS', 'PRODUCT', 'ARCHITECTURE', 'ENGINEERING', 'TESTING', 'OPERATIONS', 'design-ui', 'design-content', 'design-interface'];
-const PLAYBOOKS = ['plan', 'change', 'review'];
+const PLAYBOOKS = ['plan', 'change', 'review', 'parallel'];
 const contractName = (file) => (file.startsWith('design-') ? 'DESIGN.md' : `${file}.md`);
 const ownsOf = (text) => /^>\s*Owns:(.*?)·/m.exec(text)?.[1].trim();
 const headingsOf = (text) => text.split('\n').filter((l) => l.startsWith('## ')).map((l) => l.slice(3).trim());
@@ -83,7 +83,7 @@ const routerTargets = [...read('contracts', 'AGENTS.md').matchAll(/^\|[^|]+\|\s*
 test('the router names every contract and playbook', () => {
   assert.deepEqual(
     routerTargets.sort(),
-    ['.agents/playbooks/change.md', '.agents/playbooks/plan.md', '.agents/playbooks/review.md', 'ARCHITECTURE.md', 'DESIGN.md', 'ENGINEERING.md', 'OPERATIONS.md', 'PRODUCT.md', 'TESTING.md'],
+    ['.agents/playbooks/change.md', '.agents/playbooks/parallel.md', '.agents/playbooks/plan.md', '.agents/playbooks/review.md', 'ARCHITECTURE.md', 'DESIGN.md', 'ENGINEERING.md', 'OPERATIONS.md', 'PRODUCT.md', 'TESTING.md'],
   );
 });
 
@@ -108,7 +108,7 @@ for (const name of PLAYBOOKS) {
 
 for (const name of PLAYBOOKS) {
   test(`playbook ${name}: only points at files that exist`, () => {
-    const refs = [...read('playbooks', `${name}.md`).matchAll(/\b([A-Z]+\.md|(?:plan|change|review)\.md)\b/g)].map((m) => m[1]);
+    const refs = [...read('playbooks', `${name}.md`).matchAll(/\b([A-Z]+\.md|(?:plan|change|review|parallel)\.md)\b/g)].map((m) => m[1]);
     const known = [...CONTRACT_FILES.map(contractName), ...PLAYBOOKS.map((p) => `${p}.md`), 'README.md'];
     assert.deepEqual(refs.filter((r) => !known.includes(r)), []);
   });
