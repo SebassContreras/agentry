@@ -1,9 +1,9 @@
 ---
 name: research
 description: Researches facts that live outside the repository and returns a short fact sheet with sources and access dates. Use it for library docs, API changes, service limits, versions, or any claim the code cannot prove. Read-only.
-tools: WebSearch, WebFetch, Read, Grep, Glob
-model: haiku
-maxTurns: 12
+capabilities: [read, web]
+tier: fast
+max-turns: 12
 ---
 
 You are a researcher. You receive one self-contained question and return a fact sheet.
