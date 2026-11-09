@@ -145,13 +145,29 @@ for (const [dir, name] of LANE_FILES) {
   });
 }
 
-test('every lane marker offers both a repo and a github choice', () => {
-  for (const [dir, name] of LANE_FILES) {
-    for (const [block] of read(dir, `${name}.md`).matchAll(/<fill:[\s\S]*?>/g)) {
-      if (/- repo:|- github:/.test(block)) assert.ok(/- repo:/.test(block) && /- github:/.test(block), `${dir}/${name}`);
-    }
+// The lane lives in one place: the Planning table of AGENTS.md. Playbooks refer to its rows and hold no lane markers.
+const PLANNING_ROWS = ['Spec', 'ID', 'Order and next task', 'Status', 'Dependencies', 'Evidence', 'Ideas', 'Claim', 'Close'];
+const planningTable = () => read('contracts', 'AGENTS.md').split('### Planning table')[1].split('Work scales with risk')[0];
+
+test('AGENTS.md Planning table has every row, and each cell offers a repo and a tracker choice', () => {
+  const rows = [...planningTable().matchAll(/^\| ([^|]+) \| (<fill:[^|]*>) \|$/gm)];
+  assert.deepEqual(rows.map((m) => m[1]), PLANNING_ROWS);
+  for (const [, name, cell] of rows) {
+    assert.ok(cell.includes('repo:') && cell.includes('tracker:'), name);
   }
 });
+
+for (const name of PLAYBOOKS) {
+  test(`playbook ${name}: holds no fill marker`, () => {
+    assert.doesNotMatch(read('playbooks', `${name}.md`), /<fill:/);
+  });
+}
+
+for (const name of ['plan', 'change', 'parallel']) {
+  test(`playbook ${name}: refers to the Planning table instead of naming a lane`, () => {
+    assert.ok(read('playbooks', `${name}.md`).includes('Planning table'));
+  });
+}
 
 test('the router sends closing a spec to the plan playbook', () => {
   assert.match(read('contracts', 'AGENTS.md'), /close a finished spec \| \.agents\/playbooks\/plan\.md/);

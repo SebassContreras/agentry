@@ -180,3 +180,17 @@ test('README: the manual install copies skills/agentry, where SKILL.md lives', (
   assert.match(readme, /cp -r agentry-src\/skills\/agentry ~\/\.claude\/skills\/agentry/);
   assert.doesNotMatch(readme, /git clone \S+ ~\//);
 });
+
+test('subagents that follow a playbook find it through the AGENTS.md router, not a fixed path', () => {
+  for (const file of ['spec-review.md', 'diff-review.md', 'contract-sync.md']) {
+    assert.match(agentText(file), /router/, file);
+  }
+  assert.match(agentText('contract-sync.md'), /never report the absence of `\.agents\/playbooks\/`/);
+  assert.ok(skillText.includes('never recreate it'));
+});
+
+test('SKILL.md and the subagents name no planning tool, only the tracker lane', () => {
+  assert.doesNotMatch(skillText, /github|\bgh\b/i);
+  assert.ok(skillText.includes('*tracker*'));
+  for (const file of agentFiles) assert.doesNotMatch(agentText(file), /github|\bgh\b/i, file);
+});
