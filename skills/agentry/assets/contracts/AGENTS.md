@@ -31,16 +31,29 @@ When you decide something, name the contract and section you used ("per ENGINEER
 ## Working flow
 
 - **Collaboration:** <fill: solo (commit to the default branch) | team (feature branches and pull requests; never commit to the default branch)>
-- **Planning:** <fill: the active planning mode: repo (planning/roadmap.md and planning/specs/) | github (GitHub Issues)>
-- **Unfilled placeholders:** a placeholder that still reads "fill: …" in any contract means the fact does not exist yet (a command, a layer). Never guess it: the first task that needs it establishes it, writes it into the contract and says so.
+- **Planning lane:** <fill: repo (files under planning/, the default) | tracker (an external tool: name it)>
+- **Unfilled placeholders:** a placeholder that still reads "fill: …" in any contract means the fact does not exist yet (a command, a layer, a place in the tracker). Never guess it: the first task that needs it establishes it, writes it into the contract and says so.
 
-How to pick the next task:
-<fill:
-- repo: read planning/roadmap.md and take the first `todo` row whose `Depends on` rows are `done` (skip `in progress`). Open its spec and take the first open [agent] task. If the row has no spec file yet, write it first with .agents/playbooks/plan.md.
-- github: run `gh issue list --state open --search "no:assignee sort:created-asc"` and take the first issue whose `Depends on: #N` issues are closed and whose body has an open [agent] task.>
+### Planning table
+
+Where each planning thing lives, and how an agent reads or changes it. The playbooks refer to these rows by name and say nothing else about the lane, so changing tracker means rewriting only this table (and moving the content).
+
+| Thing | Where it lives, and how to read or change it |
+|---|---|
+| Spec | <fill: repo: planning/specs/NNN-feature.md, one file per spec · tracker: where a spec lives and how to open and edit it> |
+| ID | <fill: repo: the highest ID in planning/roadmap.md plus one; tasks read ID/T001 · tracker: how a spec gets its ID, which its tasks reuse> |
+| Order and next task | <fill: repo: planning/roadmap.md lists specs in execution order; take the first `todo` row whose Depends on rows are `done`, then its first open [agent] task; a row with no spec file is planned first · tracker: how to list work in order and take the next open [agent] task> |
+| Status | <fill: repo: the Status column of planning/roadmap.md (todo, in progress, done), set when work starts and when the spec closes · tracker: where the status lives and how to set it> |
+| Dependencies | <fill: repo: the Depends on column of planning/roadmap.md · tracker: where a spec says what it depends on> |
+| Evidence | <fill: repo: a `verified:` line under the ticked task, with the command and its outcome · tracker: where the evidence of a finished task is recorded> |
+| Ideas | <fill: repo: the `## Ideas` section of planning/roadmap.md · tracker: where later ideas and deferred fixes go> |
+| Claim | <fill: repo: set the row to `in progress` and commit it · tracker: how to mark a spec as taken before a runner starts on it> |
+| Close | <fill: repo: mark the row `done` and delete the spec file · tracker: what closing a finished spec does there> |
+
+Closing happens in the final commit or pull request of a spec, never in a task commit.
 
 Work scales with risk:
 
 - **Level 0 (Small):** Fits in one sentence and touches no recorded decision. Implement directly, run the affected test, and commit per the Collaboration mode. No spec needed.
-- **Level 1 (Feature):** Several tasks or multiple sessions. Short spec in the configured Planning location, executed task by task, closed when done.
+- **Level 1 (Feature):** Several tasks or multiple sessions. Short spec where the Planning table says, executed task by task, closed when done.
 - **Level 2 (Change of direction / Decision conflict):** Contradicts an earlier decision or requires a pivot. Follow `.agents/playbooks/change.md`: delete first, discard and redo on a disposable branch (in solo mode too), and run an orphan sweep.

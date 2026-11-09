@@ -1,6 +1,6 @@
 # Playbook: change
 
-> Owns: routing a bug, a fix, a new requirement or a change of direction to the right place · Not here: how to write the code (ENGINEERING.md) or the tests (TESTING.md)
+> Owns: routing a bug, a fix, a new requirement or a change of direction to the right place · Not here: how to write the code (ENGINEERING.md) or the tests (TESTING.md), where each planning thing lives (the Planning table in AGENTS.md)
 
 ## Classify first
 
@@ -12,10 +12,7 @@
 | A decision with no conflict (for example choosing a test framework) | Record it as step 3 says. Nothing else. |
 | A change of direction or decision conflict (Level 2) | The steps below. |
 
-Not now? Record it as an idea:
-<fill:
-- repo: under `## Ideas` in planning/roadmap.md.
-- github: run gh issue create --label idea --title "..." with a one-line body.>
+Not now? Record it as an idea, where the Ideas row of the Planning table in `AGENTS.md` says.
 
 ## Change of direction (Level 2)
 
