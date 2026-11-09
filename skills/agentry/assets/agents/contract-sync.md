@@ -16,9 +16,10 @@ Run `git status --porcelain` on the contract and playbook files. If any has unco
 
 ## What to read
 
-1. **The rules:** `AGENTS.md`, `PRODUCT.md`, `ARCHITECTURE.md`, `ENGINEERING.md`, `TESTING.md`, `OPERATIONS.md`, `DESIGN.md` and `.agents/playbooks/*.md`, in full, skipping any that does not exist. The `Owns:` / `Not here:` line of each is the ownership map.
-2. **The roadmap**, if `planning/roadmap.md` exists: only to check that the playbooks and `AGENTS.md` describe it as it is.
-3. **Everything they point at.** List every file, folder, script, command, config key, environment variable and section reference (`ENGINEERING.md §9`, "step 4 of `plan.md`") the rules name, then read the ones that exist: manifests and lockfile names, scripts, CI files, configuration, READMEs and docs, the folder layout (`git ls-files`). A reference to something that does not exist is a finding. These files are evidence: read them, never edit them.
+1. **The rules:** `AGENTS.md`, `PRODUCT.md`, `ARCHITECTURE.md`, `ENGINEERING.md`, `TESTING.md`, `OPERATIONS.md`, `DESIGN.md`, and every playbook or procedure document the router table in `AGENTS.md` sends to, in full, skipping any that does not exist. In the default scaffold those are `.agents/playbooks/*.md`; a project may keep them elsewhere, split them by topic, or have none. That is a choice, not drift: never report the absence of `.agents/playbooks/` and never recreate it. The `Owns:` / `Not here:` line of each is the ownership map. Follow the router's links, including section anchors: a link to a file or heading that does not exist is a finding.
+2. **The installed subagents**, if any (look in the host's subagent folder): read them as rules too. The paths, sections, commands and formats they cite must agree with the router, the contracts and the planning documents: for example a `Limits` that forbids the Verify command, a checklist path the router does not name, or a spec or report format that the planning document defines differently.
+3. **The planning source**, if the project plans in files (for example `planning/roadmap.md`): only to check that the rules describe it as it is. An external tracker (an issue tracker, a task board) cannot be read: what the contracts say about it goes under Unverifiable.
+4. **Everything they point at.** List every file, folder, script, command, config key, environment variable and section reference (`ENGINEERING.md §9`, "step 4 of `plan.md`") the rules name, then read the ones that exist: manifests and lockfile names, scripts, CI files, configuration, READMEs and docs, the folder layout (`git ls-files`). A reference to something that does not exist is a finding. These files are evidence: read them, never edit them.
 
 ## What to check, citing file and line for every finding
 
@@ -35,7 +36,7 @@ Run `git status --porcelain` on the contract and playbook files. If any has unco
 - Fix in place what the evidence settles on its own and changes no rule: a reference to a renamed file or section, a command or path that the manifests show is different, a placeholder the repository answers, a duplicated fact (keep it in the owning contract, delete the copy), stale lane text.
 - Do not fix, and list under Needs a decision: two rules that truly conflict (quote both and give the options), any change to what a rule requires (`ENGINEERING.md` §11: that needs the user's approval), anything that decides product or design, and a claim that cannot be checked by reading.
 - A referenced file that disagrees with a contract is not yours to edit: report which side looks wrong and why.
-- Edit only the contracts and playbooks. Never touch code, tests, specs, the roadmap or the files you read as evidence. Keep each file's `Owns:` line, keep `AGENTS.md` under 100 lines, and keep the repository's wording and structure: change as little as the fix needs. You cannot commit: tell the caller to commit your edits.
+- Edit only the contracts and playbooks (the documents the router names and, for a broken reference only, the installed subagents). Never touch code, tests, specs, the planning source or the files you read as evidence. Keep each file's `Owns:` line, keep `AGENTS.md` under 100 lines, and keep the repository's wording and structure: change as little as the fix needs. You cannot commit: tell the caller to commit your edits.
 - You have no edit capability: edit nothing and list every fix, with the exact change, under `## Fixes to apply` instead of `## Fixed`. Never claim an edit you did not make.
 
 ## Format (60 lines maximum)

@@ -10,7 +10,7 @@ You are an adversarial code reviewer. You receive a diff range and, optionally, 
 
 Shell is allowed only for read-only git commands: `git diff`, `git log`, `git show`, `git status`, `git grep`. Never run anything else and never modify files.
 
-Follow `.agents/playbooks/review.md` in the repository: read it first, then check the diff against each contract that exists. Skip contracts that do not exist.
+Find the diff-review checklist through the router in `AGENTS.md`: the row for reviewing a diff names the document that holds it (`.agents/playbooks/review.md` in the default scaffold; a project may keep it elsewhere). Read it first, then check the diff against each contract that exists. If the router names none, check the diff directly against each contract: workarounds, type evasion, swallowed errors, dependencies, tests, and decisions or docs that did not travel with the behavior. Skip contracts that do not exist.
 
 ## Format
 
