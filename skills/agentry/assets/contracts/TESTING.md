@@ -20,7 +20,7 @@ Line coverage is deceptive; test suites must prove branch coverage. Every `if`, 
 
 ## The 4 mandatory partitions
 
-For each unit under test, cover all 4 partitions:
+For each unit you add or change, cover all 4 partitions (a Level 0 change needs only the partitions it touches):
 1. **Nominal (Happy path):** exactly one canonical valid case proving intended behavior.
 2. **Boundaries and edge cases:** empty inputs (`[]`, `""`, `{}`), whitespace-only, `null`/`undefined`, zeros, negative values, and boundary extremes (min, max, ±1).
 3. **Sad path (Domain branches):** unauthorized, expired, insufficient balance, duplicate identifier, or invalid state. Assert that the domain rejects or throws the expected error.
@@ -29,17 +29,17 @@ For each unit under test, cover all 4 partitions:
 ## Test placement and organization
 
 Do not scatter loose test files directly in the module root alongside implementation files (`src/<module>/foo.test.ts`, `src/<module>/bar.test.ts`).
-- Place module tests in a dedicated `test/` (or `__tests__/`) subdirectory inside the module: `src/<module>/test/foo.test.ts`.
+- Place module tests in a dedicated `test/` (or `__tests__/`) subdirectory inside the module: `src/<module>/test/foo.test.ts`. Where the stack dictates another placement, follow it (Go `_test.go` beside the package, Rust `#[cfg(test)]` modules).
 - For integration, cross-module or contract tests, use the root `tests/` directory.
 - Keeps source folders clean and focused on production code.
 
 ## How a test reads
 
 - **Arrange, act, assert.** The test name states the condition and expected outcome (e.g. `when_balance_is_insufficient_throws_domain_error`).
-- **Use parameterized tables (`test.each`).** Avoid 10 separate boilerplate test functions. Group the 4 partitions into a compact data matrix with a descriptive label per row.
-- **No logic in tests.** No `if`, ternary, or loop inside a test body.
+- **Use parameterized tables** (`test.each`, `parametrize`, table-driven tests). Avoid 10 separate boilerplate test functions. Group the 4 partitions into a compact data matrix with a descriptive label per row.
+- **No logic in tests.** No `if`, ternary, or hand-written loop inside a test body (the framework's own table loop is not logic).
 - **Never mock the unit under test.** Mock only the network, disk, third-party SDKs, and non-deterministic clocks.
 
 ## This project
 
-<fill: framework, folders, fixtures, and a coverage floor or mutation gate if there is one>
+<fill: framework, folders, fixtures, a coverage floor or mutation gate if there is one, and the testing decisions of this project, each with Why and Revisit if>
