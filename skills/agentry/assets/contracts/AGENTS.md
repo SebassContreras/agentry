@@ -6,10 +6,11 @@ Vision, users and capabilities: PRODUCT.md.
 
 ## Hard rules (always)
 
-1. Never add Claude or AI attribution ("Generated with...", co-author trailers) to commits or pull requests. Commits are Conventional Commits with no trailers.
+1. Never add AI attribution ("Generated with...", `Co-authored-by` for a tool) to commits or pull requests. Commits are Conventional Commits; their footers (`BREAKING CHANGE:`, `Fixes:`) are allowed. If the project must disclose AI use, the trailer it requires (e.g. `Assisted-by:`) is written here.
 2. Never bypass git hooks (`--no-verify`), force-push the default branch, or stage `.env` files or secrets.
 3. Write code, comments, docs and commits in <fill: the project language, English unless the project says otherwise>. Talk to the user in <fill: the language the user speaks>. The language of the product's own text (interface, messages) is set in DESIGN.md, not here.
-4. If an instruction or decision forces a workaround or bad design, stop and report the conflict before writing code (per ENGINEERING.md).
+4. If an instruction or decision forces a workaround or bad design, stop and report the conflict before writing code (per ENGINEERING.md). In an unattended run, record the conflict in the Planning table's Evidence row and stop that task.
+5. Never run a destructive or irreversible operation (drop, delete, wipe, force-push, a production deploy or migration) against a shared or production environment without the user's explicit approval for that operation; never use a credential that was not given for the task.
 
 ## Before you act, open the contract
 

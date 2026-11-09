@@ -19,5 +19,5 @@
 <fill: recorded product decisions. Every decision must state:
 - Decision: what was decided
 - Why: the concrete reason
-- Revisit if: the observable condition that invalidates it
+- Revisit if: the observable condition that invalidates it (if you cannot name one, the decision is premature: record it as an open question, not a decision)
 - Trade-off (only if hard to reverse): the rejected alternative, the cost of this choice and its mitigation>

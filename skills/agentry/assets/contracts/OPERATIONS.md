@@ -16,7 +16,7 @@
 
 ## Environment
 
-<fill: the variables and config the project reads and where secrets live; never the values>
+<fill: the variables and config the project reads and where secrets live; never the values. State which environments an agent may touch (local and test only unless the user says otherwise) and that production credentials are never in the repository or in a place the agent can read>
 
 ## Hygiene and maintenance
 
@@ -25,6 +25,10 @@
 - Python: `vulture . && deptry .`
 - Rust: `cargo machete`>
 
+## Enforcement
+
+<fill: how the hard rules of AGENTS.md are enforced beyond the text, because tools can inject trailers or skip hooks on their own. For example a `commit-msg` hook or a CI check that rejects AI-attribution trailers and secrets, branch protection on the default branch, and permissions or tokens that make destructive operations impossible for the agent, not just forbidden in text>
+
 ## Recover
 
-<fill: what to do when it breaks: restart, roll back, the common failures and their fix>
+<fill: what to do when it breaks: restart, the common failures and their fix, and the rollback with its exact commands and the check that proves it worked. Say where backups live (outside what the agent can modify) and when a restore was last tried>

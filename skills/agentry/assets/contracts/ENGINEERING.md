@@ -6,8 +6,8 @@
 
 1. **KISS / YAGNI.** Build for today's need. Add an interface, adapter or abstraction only with 2+ concrete uses, 2+ implementations or a real test seam (the vendor seam of principle 4 is one). Simple beats clever.
 2. **One responsibility.** A file, module or function does one thing. If it does two unrelated things, split it.
-3. **Compose, don't inherit.** Share logic through small functions and injected dependencies, not class hierarchies. A rule applied in two places lives in one function both call.
-4. **Isolate vendors.** Business logic does not call a third-party SDK or API directly: it calls a project-owned interface that one adapter implements, so the vendor is swappable. Exception: a stable, single-use helper (a date or string library) may be called directly; say so in a comment.
+3. **Compose, don't inherit.** Share logic through small functions and injected dependencies, not class hierarchies. A business rule applied in two places lives in one function both call; code that merely looks alike stays duplicated until the shared rule is clear (a wrong abstraction costs more than duplication).
+4. **Isolate vendors.** Business logic does not call the SDK or API of an external service (payments, storage, email, an LLM) directly: it calls a project-owned interface that one adapter implements, so the vendor is swappable. Exception: the framework itself and stable, single-use helpers (a date or string library) may be called directly; say so in a comment.
 5. **Prefer proven primitives (Don't reinvent the wheel).** Do not hand-roll complex utilities, algorithms or UI widgets from scratch if an established ecosystem primitive exists (e.g. Radix, TanStack). If adopting it requires adding a dependency, propose it under ARCHITECTURE.md instead of writing custom brittle code.
 6. **Strict types at boundaries (No type evasion).** Type all inputs, outputs and schemas. Never use the stack's escape hatch (`any` or `as unknown as T` in TypeScript, `Any` or `# type: ignore` in Python, `interface{}` or unsafe casts elsewhere) or untyped dynamic blobs to silence compiler errors where a typed schema or interface is possible.
 7. **Fail fast and loud.** Validate preconditions at boundaries. Never swallow errors, return a fallback that hides a failure (`null`, a default, `[]` instead of the error), or mask broken invariants to make a run pass. A valid empty result is not a fallback.
@@ -24,7 +24,7 @@ If honoring a decision or instruction requires any of the following, stop and re
 2. **Duplicated code:** copying logic to avoid touching an existing module.
 3. **Special-case conditional patches:** ad-hoc `if` branches for specific cases.
 4. **Silenced exceptions:** empty `catch` or `except` blocks that hide underlying errors.
-5. **Suppressed linters or skipped tests:** disabling checks instead of solving the cause.
+5. **Suppressed linters or weakened tests:** disabling a check, skipping, deleting or loosening a test or assertion instead of solving the cause.
 
 ## Event-driven code hygiene
 

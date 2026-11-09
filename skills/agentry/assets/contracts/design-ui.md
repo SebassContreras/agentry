@@ -16,13 +16,13 @@ Rule: never hardcode hex colors, magic pixel margins or ad-hoc shadows inline; a
 Every interactive component must explicitly provide visual handling for:
 - **Default and hover:** standard and pointer feedback.
 - **Focus:** visible focus ring meeting WCAG (keyboard navigation).
-- **Disabled:** distinct visual cue; pointer events blocked.
+- **Disabled:** distinct visual cue, exposed to assistive technology (`disabled` or `aria-disabled`), not only by blocking pointer events.
 - **Loading:** skeleton loaders or spinners; prevents layout shifts.
 - **Empty and error:** clear empty-state visual and accessible error message.
 
 ## Accessibility
 
-Meet WCAG 2.1 AA: text contrast of at least 4.5:1, visible focus, everything reachable by keyboard, labelled controls.
+Meet WCAG 2.2 AA (a superset of 2.1 AA): text contrast of at least 4.5:1 (3:1 for large text and for UI components), visible focus that is not hidden behind other content, everything reachable by keyboard, labelled controls, targets of at least 24×24 CSS px, errors identified in text.
 
 ## Copy and tone
 

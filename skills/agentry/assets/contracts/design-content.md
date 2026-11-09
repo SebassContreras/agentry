@@ -16,4 +16,4 @@
 
 ## Format
 
-<fill: file formats, and how diagrams, tables, callouts or media are used>
+<fill: file formats, how diagrams, tables, callouts or media are used, and the accessibility minimum (alt text, captions, reading order)>

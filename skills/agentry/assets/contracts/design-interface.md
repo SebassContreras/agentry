@@ -8,7 +8,7 @@
 
 ## Input and output
 
-<fill: argument and payload shapes, output formats, what goes to stdout and what to stderr>
+<fill: argument and payload shapes, output formats, what goes to stdout and what to stderr, and whether a stable machine-readable mode exists (e.g. `--json`) for scripts and agents>
 
 ## Errors
 
@@ -16,4 +16,4 @@
 
 ## Compatibility
 
-<fill: what may change without notice and what is a breaking change>
+<fill: what may change without notice, what is a breaking change, and how versions are numbered>

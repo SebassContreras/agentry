@@ -16,7 +16,7 @@
 
 ## Invariants
 
-<fill: rules that hold across layers, for example "domain code never imports an adapter or a transport">
+<fill: rules that hold across layers, for example "domain code never imports an adapter or a transport". End each with how it is checked (a command or test, e.g. dependency-cruiser, import-linter, ArchUnit) or the word "unchecked"; the checks run in the Verify command of TESTING.md>
 
 ## Decisions
 
