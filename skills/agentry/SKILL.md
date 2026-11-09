@@ -27,7 +27,7 @@ Never overwrite silently.
    - Language the user speaks, and the language of the product's own text if it has a UI or messages (it may differ from the language the user speaks).
    - Project kind: *software with a UI*, *software without a UI* (CLI, API, library), or *content* (docs, video, research).
    - Collaboration mode: *solo* (commit directly to the default branch) or *team* (branches and pull requests).
-   - Planning location: *repo* (local `planning/` folder, default) or *github* (GitHub Issues).
+   - Planning lane: *repo* (local `planning/` folder, the default) or *tracker* (any external tool the user chooses: ask which one). For a tracker, ask where each row of the Planning table lives in that tool (spec, ID, order and next task, status, dependencies, evidence, ideas, claim, close) and how an agent reads and changes it. If the user does not know, propose a mapping for their tool and confirm it.
 2. **Copy and adapt** from the `assets/` folder next to this `SKILL.md` (resolve it from the path this file was loaded from, however your host exposes it) with a file copy, not by retyping:
 
    | From `assets/` | To the repository |
@@ -37,15 +37,15 @@ Never overwrite silently.
    | `playbooks/*.md` | `.agents/playbooks/` |
    | `planning/roadmap.md` (**only if planning is `repo`**) | `planning/roadmap.md`, and create `planning/specs/` with an empty `.gitkeep` |
 
-   > **Single-lane rule:** If the user selects `github`, **do not create the `planning/` directory**. The target repository must carry zero noise from the lane it did not choose.
+   > **Single-lane rule:** If the user selects `tracker`, **do not create the `planning/` directory**. The target repository must carry zero noise from the lane it did not choose.
 
    The router is `AGENTS.md`, but hosts differ in which instruction file they load on their own. Check how the agent running you loads project instructions (its documentation or settings). If it does not load `AGENTS.md` by itself, create the file it does load (for example `CLAUDE.md` or `GEMINI.md`) holding a single line that imports or points to `AGENTS.md` in the host's own syntax, or append that line to the file if it exists. Create nothing for hosts the user does not use.
 
 3. **Fill the contracts for the chosen lane.** Replace `{{PROJECT_NAME}}` (in `AGENTS.md`) and `{{GOAL}}` (in `PRODUCT.md`).
    - Set `Collaboration` in `AGENTS.md`.
-   - Fill the lane markers **strictly with the single chosen lane**, and remove the marker syntax. They are exactly: in `AGENTS.md`, the `Planning` line and the "How to pick the next task" block; in `plan.md`, steps 4 and 6, the evidence bullet and "Finished spec"; in `change.md`, the "Not now?" block; in `parallel.md`, step 3.
-     - **If `repo`:** write only the `planning/roadmap.md` and `planning/specs/` instructions. Omit any mention of GitHub Issues.
-     - **If `github`:** write only the `gh issue ...` instructions. Omit any mention of `planning/` or `roadmap.md`.
+   - The lane lives in exactly one place: the `Planning lane` line and the **Planning table** in `AGENTS.md` (the playbooks only refer to its rows by name). Fill each cell with the single chosen lane and remove the marker syntax.
+     - **If `repo`:** keep each cell's `repo:` text and drop its `tracker:` text.
+     - **If `tracker`:** write each cell as the user said it lives in their tool, with the commands, tools or steps an agent needs, and drop the `repo:` text. Name the tool in the `Planning lane` line. Omit any mention of `planning/` or `roadmap.md`.
    - Every other placeholder that reads `<fill: …>`: answer it from the repository and the user's answers, including the Verify, Setup and Run commands in `TESTING.md` and `OPERATIONS.md` when a manifest or script shows them. Do not restate what a file listing would show. If the fact does not exist yet (an empty new repository), leave the placeholder untouched and report it: `AGENTS.md` tells the agent that first needs it to establish it. Keep `AGENTS.md` under 100 lines. Put the user's language in `AGENTS.md` (hard rule 3) and the product's language in `DESIGN.md`. Each fact lives in one contract only.
 
    For a project that is not software (video, writing, research), keep the same files and change what they hold: `ENGINEERING.md` holds production standards and drops code principles; `TESTING.md` holds the review checklist; `DESIGN.md` is the content variant.
@@ -62,8 +62,8 @@ If the user already has a plan (in the conversation, a document or an issue), ru
 | commands, environment, release and recovery steps | `OPERATIONS.md` |
 | tools, naming, test framework, coverage rules | the "This project" section of `ENGINEERING.md` or `TESTING.md` |
 | interface, tokens, copy or content rules | `DESIGN.md` |
-| order, phases, dates, later ideas | the planning tracker: roadmap rows and `## Ideas` |
-| the first thin slice | one spec in the `plan.md` format; later specs only as roadmap rows |
+| order, phases, dates, later ideas | the planning tracker, in the places the Planning table names (order, dependencies, ideas) |
+| the first thin slice | one spec in the `plan.md` format; later specs only as entries in the order |
 
 Write each decision with `Why:` and `Revisit if:` (and `Trade-off:` if it is hard to reverse). A sentence about order or a build detail inside `PRODUCT.md` is a misplaced fact: move it. After writing, commit the scaffold first, then the spec, and run `spec-review` on it; the plan is input, not the spec. Without the subagent, follow "Reviewing a spec" in `.agents/playbooks/review.md` in a clean context.
 
@@ -73,13 +73,15 @@ For each shipped file (contracts, playbooks, and any subagent copied to the host
 
 - A contract the repository has edited: propose only sections or rules it lacks. Never replace its text.
 - The playbooks and subagents: replace only when the user approves the diff, then re-apply the chosen lane to the new text.
+- A shipped file that is missing, or that the router in `AGENTS.md` sends to another place, was removed or moved on purpose (a project may drop the playbooks or keep its procedures elsewhere): never recreate it. Skip it and say so.
 
-### Switching planning lanes (`repo` ↔ `github`)
+### Switching planning lanes, or tracker (`repo` ↔ `tracker`, or one tracker for another)
 
-Show the plan first and get the user's approval before deleting or closing anything. Re-fill the lane markers listed in Init step 3 from the shipped files.
+The lane lives only in the Planning table of `AGENTS.md`, so a switch is two jobs: rewrite that table for the new lane (ask where each row lives, as in Init step 1), and move the content to the places it names. Show the plan first and get the user's approval before deleting or closing anything.
 
-- **From `repo` to `github`:** run `gh issue create` for every open row of `planning/roadmap.md` (the spec file as the body, or the row's title as the goal if it has none; `Depends on` becomes a `Depends on: #N` line; each `## Ideas` entry becomes an issue labelled `idea`). Check them with `gh issue list`. Only then delete the `planning/` folder.
-- **From `github` to `repo`:** fetch open issues via `gh issue list`; scaffold `planning/roadmap.md` and `planning/specs/`; write a `todo` row (and a spec file for the next one) for each issue that is not labelled `idea`, and a `## Ideas` line for each that is. Ask whether to close the issues.
+- **From `repo` to a tracker:** create each open row's spec in the tracker (the spec file as the body, or the row's title as the goal if it has none), carry over its dependencies and order, and each `## Ideas` entry as an idea. Check what was created. Only then delete the `planning/` folder.
+- **From a tracker to `repo`:** read the open work, scaffold `planning/roadmap.md` and `planning/specs/`; write a `todo` row (and a spec file for the next one) for each open spec, and a `## Ideas` line for each idea. Ask whether to close the items in the tracker.
+- **From one tracker to another:** read the open work from the old one, recreate it in the new one as its table rows say, and ask what to do with the old items.
 
 ## Optional extras (suggest, never install by default)
 
@@ -93,6 +95,8 @@ Agentry ships no mandatory hooks or blocking linters. These instructions are hos
   - `tier` → one of the host's models: `fast` is its cheapest quick model, `standard` a mid-size one. `max-turns` → its turn or step limit, if it has one.
   - `isolation: worktree` → the host's own worktree isolation. If the host has none, do not install `spec-runner`: `parallel.md` has a manual path.
   - Where the host can enforce the shell limits the body states (a command allowlist or a sandbox), configure it; otherwise the body instruction is the only guard.
+
+  The agents find a playbook through the router in `AGENTS.md`, never through a fixed path, because a project may keep its procedures elsewhere or have none.
 
   What each does:
   - `research` returns a fact sheet with sources, keeping web searches out of the main context. Skip it if the host ships its own research subagent.

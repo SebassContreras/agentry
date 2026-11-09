@@ -48,10 +48,11 @@ To eliminate sycophantic obedience, `agentry` defines **objective, observable co
 The agent is contractually bound to **STOP immediately and report the design conflict** before writing code.
 
 ### 4. Single-Lane Scaffolding (Zero Context Pollution)
-Agentry understands multiple workflows (offline local markdown vs. GitHub Issues), but **your target repository receives only the single lane you choose**:
-- **Repo Mode:** Creates `planning/roadmap.md` and `planning/specs/`. Contracts and playbooks contain zero mention of GitHub.
-- **GitHub Mode:** Creates **no `planning/` directory**. Contracts instruct the agent directly with `gh issue list`, `gh issue create`, and `Closes #N`.
-- The agent never gets confused by hypothetical `if/else` options in its instructions: the contracts and playbooks carry only the lane you chose (the optional subagents understand both).
+Agentry has two planning lanes, and **your target repository receives only the one you choose**:
+- **Repo (default):** Creates `planning/roadmap.md` and `planning/specs/`.
+- **Tracker:** Any external tool you pick (an issue tracker, a task board…). Creates **no `planning/` directory**. The scaffold asks where each planning thing lives in your tool and writes it into one **Planning table** in `AGENTS.md` (spec, ID, order and next task, status, dependencies, evidence, ideas, claim, close).
+- The playbooks and subagents never name a lane or a tool: they refer to the table's rows. Changing tracker means rewriting that one table and moving the content, nothing else.
+- The agent never gets confused by hypothetical `if/else` options in its instructions: the contracts and playbooks carry only the lane you chose.
 
 ### 5. Production-Ready Engineering & Testing Standards
 - **No Type Evasion:** Explicitly forbids `any` or unchecked type casts (`as unknown as T`) to silence compiler warnings.
@@ -147,7 +148,7 @@ The skill will ask 5 simple questions:
 2. **Languages**: The language you speak vs. the language of the product's UI/messages.
 3. **Project kind**: Software with UI, headless (CLI/API/library), or content/research.
 4. **Collaboration mode**: Solo (direct commits to `main`) or Team (branches and pull requests).
-5. **Planning location**: `repo` (local `planning/` folder) or `github` (GitHub Issues).
+5. **Planning lane**: `repo` (local `planning/` folder, the default) or `tracker` (any external tool; it then asks where each row of the Planning table lives in that tool).
 
 `agentry` inspects your existing codebase (package manifests, scripts, README) and tailors the contracts cleanly with zero filler.
 
@@ -161,13 +162,13 @@ The skill is host-neutral: it asks the agent running it to use that agent's own 
 
 ### 3. Switching Planning Lanes
 
-If a solo project outgrows local files and transitions to a team using GitHub Issues:
+If a solo project outgrows local files and moves to a tracker (or changes tracker):
 
 ```text
 update agentry
 ```
 
-The skill proposes the switch and waits for your approval before touching anything. It then converts open specs and ideas from `planning/roadmap.md` into GitHub Issues (`gh issue create`), checks them, removes the local `planning/` directory, and re-fills the lane text in `AGENTS.md`, `plan.md`, `change.md` and `parallel.md` to use GitHub commands natively.
+The skill asks where each row of the Planning table will live in the new place and proposes the switch, waiting for your approval before touching anything. It then moves the open specs and ideas, checks them, removes the local `planning/` directory if it was the old lane, and rewrites only the Planning table in `AGENTS.md`.
 
 ---
 
