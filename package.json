@@ -5,7 +5,7 @@
   "description": "Agent contracts and playbooks for high-speed coding with zero friction. Event-driven hygiene, single-responsibility contracts, and ceremony scaled by risk.",
   "type": "module",
   "engines": {
-    "node": ">=20"
+    "node": ">=22"
   },
   "scripts": {
     "test": "node --test \"tests/*.test.mjs\""

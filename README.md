@@ -33,9 +33,9 @@ Linters and dead-code checks do not run on every keystroke. Routine forward addi
 
 ### 2. Ceremony Scaled by Risk
 Not all tasks carry equal risk. Ceremony scales strictly by the blast radius:
-- **Level 0 (Small / 60% of work):** Fits in one sentence and touches no recorded decision. Implement directly, run the affected test, and commit per collaboration mode. Zero spec overhead.
-- **Level 1 (Feature / 35% of work):** Multi-task or multi-session feature. Thin spec (<80 lines), executed task by task, and **deleted upon completion** so specs never accumulate as debt.
-- **Level 2 (Change of Direction / 5% of work):** Contradicts an earlier decision or requires an architectural pivot. Applies **"Delete first"**, discard-and-redo on a disposable branch, and a clean-context review.
+- **Level 0 (Small):** Fits in one sentence and touches no recorded decision. Implement directly, run the affected test, and commit per collaboration mode. Zero spec overhead.
+- **Level 1 (Feature):** Multi-task or multi-session feature. Thin spec (<80 lines), executed task by task, and **deleted upon completion** so specs never accumulate as debt.
+- **Level 2 (Change of Direction):** Contradicts an earlier decision or requires an architectural pivot. Applies **"Delete first"**, discard-and-redo on a disposable branch, and a clean-context review.
 
 ### 3. Workaround Signals as Binary Stop Conditions
 To eliminate sycophantic obedience, `agentry` defines **objective, observable code anti-patterns**. If fulfilling an instruction forces the agent to introduce:
@@ -48,10 +48,10 @@ To eliminate sycophantic obedience, `agentry` defines **objective, observable co
 The agent is contractually bound to **STOP immediately and report the design conflict** before writing code.
 
 ### 4. Single-Lane Scaffolding (Zero Context Pollution)
-Agentry understands multiple workflows (offline local markdown vs. GitHub Issues vs. cloud trackers), but **your target repository receives only the single lane you choose**:
-- **Repo Mode:** Creates `planning/roadmap.md` and `planning/specs/`. Contracts contain zero mention of GitHub.
+Agentry understands multiple workflows (offline local markdown vs. GitHub Issues), but **your target repository receives only the single lane you choose**:
+- **Repo Mode:** Creates `planning/roadmap.md` and `planning/specs/`. Contracts and playbooks contain zero mention of GitHub.
 - **GitHub Mode:** Creates **no `planning/` directory**. Contracts instruct the agent directly with `gh issue list`, `gh issue create`, and `Closes #N`.
-- The agent never gets confused by hypothetical `if/else` options in its instructions.
+- The agent never gets confused by hypothetical `if/else` options in its instructions: the contracts and playbooks carry only the lane you chose (the optional subagents understand both).
 
 ### 5. Production-Ready Engineering & Testing Standards
 - **No Type Evasion:** Explicitly forbids `any` or unchecked type casts (`as unknown as T`) to silence compiler warnings.
@@ -66,6 +66,7 @@ Agentry understands multiple workflows (offline local markdown vs. GitHub Issues
 
 ```text
 ├── AGENTS.md                  # Traffic router, hard safety rules, and workflow configuration
+├── (CLAUDE.md, GEMINI.md…)    # Only if your agent does not load AGENTS.md by itself: one line pointing to it
 ├── PRODUCT.md                 # Vision, users, capabilities (present tense), and decisions (Why/Revisit if)
 ├── ARCHITECTURE.md            # Layers, boundaries, invariants, and allowed ## Dependencies
 ├── ENGINEERING.md             # 12 core principles, workaround stop signals, and event-driven hygiene
@@ -75,24 +76,25 @@ Agentry understands multiple workflows (offline local markdown vs. GitHub Issues
 ├── .agents/playbooks/
 │   ├── plan.md                # Thin-slice feature planning (<80 lines per spec, deleted on completion)
 │   ├── change.md              # Discard-and-redo, delete-first on pivots, and orphan sweeps
-│   ├── review.md              # Clean-context reviewer checklist (audits diffs without modifying code)
+│   ├── review.md              # Clean-context checklists: spec review (may fix the spec) and diff review (reports only)
 │   └── parallel.md            # Run several reviewed specs at once, one git worktree each, merged one at a time
 └── planning/                  # (Only in 'repo' mode)
-    └── roadmap.md             # Living queue of active work only (no archived clutter)
+    └── roadmap.md             # Living queue of active work; `done` rows stay only as the ID register
 ```
 
-Optional Claude Code subagents (`spec-runner` writes code, only inside its own worktree; `spec-review` edits only the spec it audits), offered as a question and never installed by default:
+Optional subagents, offered as a question and never installed by default. The skill ships one host-neutral definition per agent in `skills/agentry/assets/agents/`, and **the agent running the skill adapts each one to its own host** (its subagent folder and frontmatter format): `capabilities` become the host's tools, `tier` one of its models, `isolation: worktree` its worktree isolation.
 
 ```text
-└── .claude/agents/
-    ├── research.md            # Haiku: external facts as a fact sheet with sources
-    ├── spec-review.md         # Sonnet: audits a spec against the contracts and fixes the spec itself
-    ├── diff-review.md         # Sonnet: audits a diff (read-only git)
-    ├── dead-code-check.md     # Haiku: runs the OPERATIONS.md hygiene command
-    └── spec-runner.md         # Sonnet: implements every [agent] task of one reviewed spec in an isolated worktree
+agents/
+├── research.md            # fast: external facts as a fact sheet with sources
+├── spec-review.md         # standard: audits a spec against the contracts and fixes the spec itself (lists the fixes if it cannot edit)
+├── diff-review.md         # standard: audits a diff (read-only git)
+├── dead-code-check.md     # fast: runs the OPERATIONS.md hygiene command
+├── contract-sync.md       # standard: finds contradictions and drift between the contracts, playbooks and the files they name, and realigns them
+└── spec-runner.md         # standard: implements every [agent] task of one reviewed spec in an isolated worktree
 ```
 
-The same three audit agents exist for Antigravity under `.agents/agents/` (Antigravity already ships a built-in `research` subagent), using `flash`/`pro` models and sandboxed commands. They only report: Antigravity subagents get no edit tool, so its `spec-review` lists the fixes for you to apply. `spec-runner` has no Antigravity variant; use the manual worktree path in `parallel.md`.
+A host with no worktree isolation skips `spec-runner` and uses the manual worktree path in `parallel.md`; a host with its own research subagent skips `research`.
 
 ### Several specs at once
 
@@ -118,11 +120,15 @@ pnpm dlx skills add -g SebassContreras/agentry
 <summary>Manual installation (git clone)</summary>
 
 ```bash
+# The skill is the skills/agentry folder, not the repository root:
+# clone anywhere, then copy that folder so SKILL.md sits at <skills dir>/agentry/SKILL.md
+git clone https://github.com/SebassContreras/agentry agentry-src
+
 # Claude Code (global)
-git clone https://github.com/SebassContreras/agentry ~/.claude/skills/agentry
+cp -r agentry-src/skills/agentry ~/.claude/skills/agentry
 
 # Antigravity (global)
-git clone https://github.com/SebassContreras/agentry ~/.gemini/antigravity-cli/skills/agentry
+cp -r agentry-src/skills/agentry ~/.gemini/antigravity-cli/skills/agentry
 ```
 </details>
 
@@ -147,6 +153,12 @@ The skill will ask 5 simple questions:
 
 ---
 
+### Host notes
+
+The skill is host-neutral: it asks the agent running it to use that agent's own conventions (skill directory, instruction file, subagent folder, settings). For reference, in Claude Code: `${CLAUDE_SKILL_DIR}` is the skill folder; `CLAUDE.md` containing `@AGENTS.md` makes it load the router; subagents go in `.claude/agents/` with `tools`, `model` (`haiku` for `fast`, `sonnet` for `standard`), `maxTurns` and `isolation` in the frontmatter; `parallel.md` runners start from the default branch unless `worktree.baseRef` is `head` in `.claude/settings.json`, and `.worktreeinclude` lists the gitignored files a worktree needs; `permissions.deny` in `.claude/settings.json` keeps secrets unread; per-model effort lives under `modelSettings`. In Antigravity: subagents go in `.agents/agents/` with `tools: [view_file, run_command]` (no edit tool, so `spec-review` lists its fixes), `subagent: true`, `mainAgent: false`, `model: flash` or `pro`, and `commandExecutionPolicy: sandbox` for the ones that run commands; it ships its own `research` subagent and has no worktree isolation for `spec-runner`.
+
+---
+
 ### 3. Switching Planning Lanes
 
 If a solo project outgrows local files and transitions to a team using GitHub Issues:
@@ -155,7 +167,7 @@ If a solo project outgrows local files and transitions to a team using GitHub Is
 update agentry
 ```
 
-The skill automatically converts open specs from `planning/roadmap.md` into GitHub Issues (`gh issue create`), removes the local `planning/` directory, and updates `AGENTS.md` and `plan.md` to use GitHub commands natively.
+The skill proposes the switch and waits for your approval before touching anything. It then converts open specs and ideas from `planning/roadmap.md` into GitHub Issues (`gh issue create`), checks them, removes the local `planning/` directory, and re-fills the lane text in `AGENTS.md`, `plan.md`, `change.md` and `parallel.md` to use GitHub commands natively.
 
 ---
 
@@ -164,10 +176,10 @@ The skill automatically converts open specs from `planning/roadmap.md` into GitH
 `agentry` is backed by an automated test suite enforcing contract invariants, single-responsibility separation, and template synchronization:
 
 ```bash
-pnpm test
+npm test
 ```
 
-The tests run natively using Node's built-in test runner (`node:test`) with zero dependencies.
+The tests run natively using Node's built-in test runner (`node:test`, Node 22+) with zero dependencies.
 
 ---
 
