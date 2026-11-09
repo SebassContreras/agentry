@@ -120,11 +120,9 @@ test('review playbook owns the spec checklist and enforces the trade-off princip
   assert.match(review, /§12/);
 });
 
-for (const platform of ['claude-code', 'antigravity']) {
-  test(`${platform} spec-review delegates its checklist to the review playbook`, () => {
-    assert.match(read(platform, 'agents', 'spec-review.md'), /Reviewing a spec.*review\.md/s);
-  });
-}
+test('spec-review delegates its checklist to the review playbook', () => {
+  assert.match(read('agents', 'spec-review.md'), /Reviewing a spec.*review\.md/s);
+});
 
 for (const file of ['PRODUCT', 'ARCHITECTURE']) {
   test(`${file} decisions can record a trade-off`, () => {
@@ -134,4 +132,27 @@ for (const file of ['PRODUCT', 'ARCHITECTURE']) {
 
 test('the roadmap template has the columns the plan playbook uses', () => {
   assert.match(read('planning', 'roadmap.md'), /\| ID\s+\| Spec\s+\| Status\s+\| Depends on\s+\|/);
+});
+
+// Single-lane rule: outside the `<fill: …>` blocks, contracts and playbooks name neither lane.
+const LANE_WORDS = /github|gh issue|\bissues?\b|roadmap|planning\//i;
+const outsideFill = (text) => text.replace(/<fill:[\s\S]*?>/g, '');
+const LANE_FILES = [...CONTRACT_FILES.map((f) => ['contracts', f]), ...PLAYBOOKS.map((p) => ['playbooks', p])];
+
+for (const [dir, name] of LANE_FILES) {
+  test(`${dir}/${name}: mentions no planning lane outside its fill blocks`, () => {
+    assert.deepEqual(outsideFill(read(dir, `${name}.md`)).match(LANE_WORDS) ?? [], []);
+  });
+}
+
+test('every lane marker offers both a repo and a github choice', () => {
+  for (const [dir, name] of LANE_FILES) {
+    for (const [block] of read(dir, `${name}.md`).matchAll(/<fill:[\s\S]*?>/g)) {
+      if (/- repo:|- github:/.test(block)) assert.ok(/- repo:/.test(block) && /- github:/.test(block), `${dir}/${name}`);
+    }
+  }
+});
+
+test('the router sends closing a spec to the plan playbook', () => {
+  assert.match(read('contracts', 'AGENTS.md'), /close a finished spec \| \.agents\/playbooks\/plan\.md/);
 });

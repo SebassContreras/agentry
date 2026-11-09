@@ -24,8 +24,10 @@ test('SKILL.md: stays short enough to read in one go', () => {
   assert.ok(skillText.trimEnd().split('\n').length <= 150);
 });
 
+const PLAYBOOK_NAMES = ['plan', 'change', 'review', 'parallel'];
+
 const skillRows = [
-  { name: 'asks for the language of the product apart from the user\'s', needle: 'not the same as the language the user speaks' },
+  { name: 'asks for the language of the product apart from the user\'s', needle: 'may differ from the language the user speaks' },
   { name: 'ships no mandatory hooks', needle: 'Agentry ships no mandatory hooks' },
   { name: 'presents extras as a question', needle: 'suggest, never install by default' },
   { name: 'adapts the contracts to a project that is not software', needle: 'not software' },
@@ -42,7 +44,7 @@ for (const row of skillRows) {
 
 const assetFiles = readdirSync(ASSETS, { recursive: true, withFileTypes: true })
   .filter((entry) => entry.isFile())
-  .map((entry) => ({ dir: entry.parentPath.slice(ASSETS.length + 1).split('\\').join('/'), name: entry.name }));
+  .map((entry) => ({ dir: (entry.parentPath ?? entry.path).slice(ASSETS.length + 1).split('\\').join('/'), name: entry.name }));
 
 for (const file of assetFiles) {
   test(`SKILL.md accounts for asset ${file.dir}/${file.name}`, () => {
@@ -60,55 +62,76 @@ for (const variant of ['design-ui', 'design-interface', 'design-content']) {
   });
 }
 
-// Claude Code subagents are optional extras: they must be read-only and pinned to a model.
-const AGENTS_DIR = join(ASSETS, 'claude-code', 'agents');
+// Subagents are optional, host-neutral extras: each declares abstract capabilities and a model tier,
+// and the agent running the skill adapts the file to its own host. They must be least-privilege.
+const AGENTS_DIR = join(ASSETS, 'agents');
 const agentFiles = readdirSync(AGENTS_DIR).filter((file) => file.endsWith('.md'));
-const READ_ONLY_TOOLS = ['Read', 'Grep', 'Glob', 'WebSearch', 'WebFetch'];
-// Agents that run a command; their body must restrict Bash to read-only or a single configured command.
-const BASH_AGENTS = ['diff-review.md', 'dead-code-check.md', 'spec-runner.md', 'spec-review.md'];
+const CAPABILITIES = ['read', 'edit-files', 'write-files', 'shell', 'web'];
+// Agents that run a command; their body must restrict the shell to read-only git or one configured command.
+const SHELL_AGENTS = ['diff-review.md', 'dead-code-check.md', 'spec-runner.md', 'spec-review.md', 'contract-sync.md'];
 // spec-runner writes code: it must run in its own worktree.
 const WRITE_AGENTS = ['spec-runner.md'];
-const WRITE_TOOLS = ['Edit', 'Write'];
-// spec-review may edit the spec file only (Edit, never Write); it needs no worktree.
-const EDIT_ONLY_AGENTS = ['spec-review.md'];
+// spec-review may edit the spec file only (edit-files, never write-files); it needs no worktree.
+const EDIT_ONLY_AGENTS = ['spec-review.md', 'contract-sync.md'];
+const WEB_AGENTS = ['research.md'];
 const agentText = (file) => lf(readFileSync(join(AGENTS_DIR, file), 'utf8'));
+const capabilitiesOf = (file) => /^capabilities: \[(.+)\]$/m.exec(agentText(file))[1].split(',').map((c) => c.trim());
 
 for (const file of agentFiles) {
-  test(`subagent ${file}: frontmatter names it after the file and pins a model`, () => {
+  test(`subagent ${file}: frontmatter names it after the file and sets a tier and a turn limit`, () => {
     const text = agentText(file);
     assert.equal(/^name: (.+)$/m.exec(text)?.[1], file.replace(/\.md$/, ''));
     assert.match(text, /^description: \S/m);
-    assert.match(text, /^model: (haiku|sonnet|opus)$/m);
+    assert.match(text, /^tier: (fast|standard)$/m);
+    assert.match(text, /^max-turns: \d+$/m);
   });
 
-  test(`subagent ${file}: only receives read-only tools`, () => {
-    const tools = /^tools: (.+)$/m.exec(agentText(file))[1].split(',').map((tool) => tool.trim());
+  test(`subagent ${file}: only declares the capabilities its job needs`, () => {
+    const capabilities = capabilitiesOf(file);
     const allowed = [
-      ...READ_ONLY_TOOLS,
-      ...(BASH_AGENTS.includes(file) ? ['Bash'] : []),
-      ...(WRITE_AGENTS.includes(file) ? WRITE_TOOLS : []),
-      ...(EDIT_ONLY_AGENTS.includes(file) ? ['Edit'] : []),
+      'read',
+      ...(SHELL_AGENTS.includes(file) ? ['shell'] : []),
+      ...(WRITE_AGENTS.includes(file) ? ['edit-files', 'write-files'] : []),
+      ...(EDIT_ONLY_AGENTS.includes(file) ? ['edit-files'] : []),
+      ...(WEB_AGENTS.includes(file) ? ['web'] : []),
     ];
-    assert.deepEqual(tools.filter((tool) => !allowed.includes(tool)), []);
-    if (tools.includes('Bash')) assert.match(agentText(file), /Bash is (allowed only|for)/);
+    assert.deepEqual(capabilities.filter((c) => !CAPABILITIES.includes(c)), []);
+    assert.deepEqual(capabilities.filter((c) => !allowed.includes(c)), []);
+    if (capabilities.includes('shell')) assert.match(agentText(file), /Shell is (allowed only|for)/);
+  });
+
+  test(`subagent ${file}: names no host-specific tool or model`, () => {
+    assert.doesNotMatch(agentText(file), /\b(Bash|WebSearch|WebFetch|view_file|run_command|haiku|sonnet|opus|flash)\b/i);
   });
 }
 
 test('subagent spec-runner: isolated in a worktree, never pushes, merges or skips hooks', () => {
   const text = agentText('spec-runner.md');
   assert.match(text, /^isolation: worktree$/m);
-  assert.doesNotMatch(text, /WebSearch|WebFetch/);
+  assert.ok(!capabilitiesOf('spec-runner.md').includes('web'));
   assert.match(text, /Never push, merge, rebase, reset/);
   assert.match(text, /No trailers, no `--no-verify`/);
 });
 
-test('subagent spec-review: edits only the spec and never writes code', () => {
+test('subagent spec-review: edits only the spec, never writes code, and has a fallback without an edit tool', () => {
   const text = agentText('spec-review.md');
-  assert.doesNotMatch(/^tools: (.+)$/m.exec(text)[1], /Write/);
+  assert.ok(!capabilitiesOf('spec-review.md').includes('write-files'));
   assert.match(text, /read-only git commands: `git status`, `git diff`, `git log`/);
   assert.match(text, /uncommitted changes, stop and edit nothing/);
   assert.match(text, /Edit only the spec/);
   assert.match(text, /Never touch code, contracts/);
+  assert.match(text, /## Fixes to apply/);
+});
+
+test('subagent contract-sync: edits only contracts and playbooks, reads what they reference, and needs a clean git state', () => {
+  const text = agentText('contract-sync.md');
+  assert.ok(!capabilitiesOf('contract-sync.md').includes('write-files'));
+  assert.match(text, /read-only git commands: `git status`, `git diff`, `git log`/);
+  assert.match(text, /uncommitted changes, stop and edit nothing/);
+  assert.match(text, /Edit only the contracts and playbooks/);
+  assert.match(text, /read them, never edit them/);
+  assert.match(text, /## Needs a decision/);
+  assert.match(text, /## Fixes to apply/);
 });
 
 test('only write-capable subagents declare isolation', () => {
@@ -116,21 +139,44 @@ test('only write-capable subagents declare isolation', () => {
   assert.deepEqual(isolated, WRITE_AGENTS);
 });
 
-// Antigravity subagents: only use runtime-injected tools (view_file, run_command); grep_search is ignored by the runtime, so read-only git grep is used in sandbox.
-const AG_DIR = join(ASSETS, 'antigravity', 'agents');
-const AG_TOOLS = ['view_file', 'run_command'];
-for (const file of readdirSync(AG_DIR).filter((f) => f.endsWith('.md'))) {
-  test(`antigravity subagent ${file}: documented tools, pinned model, sandboxed commands`, () => {
-    const text = lf(readFileSync(join(AG_DIR, file), 'utf8'));
-    assert.equal(/^name: (.+)$/m.exec(text)?.[1], file.replace(/\.md$/, ''));
-    assert.match(text, /^subagent: true$/m);
-    assert.match(text, /^mainAgent: false$/m);
-    assert.match(text, /^model: (inherit|flash|pro)$/m);
-    const tools = /^tools: \[(.+)\]$/m.exec(text)[1].split(',').map((t) => t.trim());
-    assert.deepEqual(tools.filter((t) => !AG_TOOLS.includes(t)), []);
-    if (tools.includes('run_command')) {
-      assert.match(text, /^commandExecutionPolicy: sandbox$/m);
-      assert.match(text, /run_command is (allowed only|for)/);
-    }
-  });
-}
+test('SKILL.md: has the running agent adapt the subagents to its host', () => {
+  assert.ok(skillText.includes('agents/*.md'));
+  assert.ok(skillText.includes('you adapt them to the host you are running in'));
+  assert.doesNotMatch(skillText, /claude-code|antigravity/i);
+});
+
+test('SKILL.md: is host-neutral and has the agent wire AGENTS.md through its own instruction file', () => {
+  assert.ok(skillText.includes('does not load `AGENTS.md` by itself'));
+  assert.doesNotMatch(skillText, /CLAUDE_SKILL_DIR|settings\.json|@AGENTS\.md/);
+});
+
+test('playbooks: name no host-specific setting or folder', () => {
+  for (const name of PLAYBOOK_NAMES) {
+    assert.doesNotMatch(read('playbooks', `${name}.md`), /worktree\.baseRef|\.worktreeinclude|\.claude\//);
+  }
+});
+
+test('SKILL.md: asks for approval before switching planning lanes and handles a foreign AGENTS.md', () => {
+  assert.ok(skillText.includes("get the user's approval before deleting"));
+  assert.ok(skillText.includes('**adopt**'));
+});
+
+test('subagent spec-runner: every git command its report asks for is allowed by its Limits', () => {
+  const text = agentText('spec-runner.md');
+  const limits = /## Limits\n([\s\S]*?)\n## Report/.exec(text)[1];
+  const report = /## Report[\s\S]*$/.exec(text)[0];
+  const commands = [...report.matchAll(/`(git [^`]+)`/g)].map((m) => m[1]);
+  assert.ok(commands.length > 0);
+  assert.deepEqual(commands.filter((cmd) => !limits.includes(cmd)), []);
+});
+
+test('package.json: engines match the Node needed by the test glob', () => {
+  const pkg = JSON.parse(readFileSync(join(SKILL, '..', '..', 'package.json'), 'utf8'));
+  assert.equal(pkg.engines.node, '>=22');
+});
+
+test('README: the manual install copies skills/agentry, where SKILL.md lives', () => {
+  const readme = lf(readFileSync(join(SKILL, '..', '..', 'README.md'), 'utf8'));
+  assert.match(readme, /cp -r agentry-src\/skills\/agentry ~\/\.claude\/skills\/agentry/);
+  assert.doesNotMatch(readme, /git clone \S+ ~\//);
+});
